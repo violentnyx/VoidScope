@@ -220,13 +220,13 @@ export function DeadlockWidgetModal({
                         result={match.result}
                         lowestTier={match.averageBadge != null && Math.floor(match.averageBadge / 10) <= 1}
                       />
-                      <div className="mt-[-4px] flex h-[26px] items-center justify-center">
+                      <div className="mt-[2px] flex h-[70px] items-center justify-center">
                         {match.nameImageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={match.nameImageUrl}
                             alt={match.heroName}
-                            className="h-[24px] w-auto max-w-[150px] object-contain"
+                            className="h-[70px] w-auto max-w-[140px] object-contain"
                           />
                         ) : (
                           <h4 className="whitespace-nowrap text-[14px] font-black uppercase italic leading-none text-white sm:text-[16px]">
