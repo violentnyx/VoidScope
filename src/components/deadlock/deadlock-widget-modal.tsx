@@ -233,7 +233,7 @@ export function DeadlockWidgetModal({
                 </div>
               </section>
 
-              <aside className="relative min-h-[520px] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:min-h-0 lg:w-[50%]">
+              <aside className="relative min-h-[520px] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:min-h-0 lg:w-[60%]">
                 <h3 className="relative z-20 text-center text-[14px] font-black uppercase italic text-white sm:text-[18px]">Herói mais jogado nos últimos 30 dias</h3>
                 {hero ? (
                   <>
