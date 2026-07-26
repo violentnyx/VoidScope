@@ -56,7 +56,7 @@ function MatchPortrait({
   lowestTier: boolean;
 }) {
   return (
-    <div className="relative h-[146px] w-[82px] shrink-0 sm:h-[162px] sm:w-[161px]">
+    <div className="relative h-[161px] w-[90px] shrink-0 sm:h-[178px] sm:w-[177px]">
       {heroUrl ? (
         <div
           className="absolute left-[31%] top-[19%] z-20 h-[70%] w-[38%] overflow-hidden"
@@ -89,7 +89,7 @@ function MatchPortrait({
       ) : null}
       <span
         aria-hidden
-        className={`absolute bottom-[2%] left-1/2 z-30 h-[4px] w-[140px] -translate-x-1/2 ${
+        className={`absolute bottom-[2%] left-1/2 z-30 h-[4px] w-[154px] -translate-x-1/2 ${
           result === "win" ? "bg-[#00ef4f]" : result === "loss" ? "bg-[#ff3038]" : "bg-white/35"
         }`}
       />
@@ -210,7 +210,7 @@ export function DeadlockWidgetModal({
             <div className="mt-5 grid gap-8 lg:mt-0">
               <section className="lg:absolute lg:bottom-[12%] lg:left-[-4%] lg:z-20 lg:w-[47%]">
                 <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,161px)] lg:justify-center lg:gap-x-1">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,177px)] lg:justify-center lg:gap-x-1">
                   {recentMatches.map((match) => (
                     <article key={match.matchId} className="relative min-w-0 text-center">
                       <MatchPortrait
