@@ -12,6 +12,7 @@ import {
   useShaderLabCanvasSource,
   type ShaderLabConfig,
 } from "@basementstudio/shader-lab";
+import { useShaderRenderEnabled } from "@/lib/use-shader-render-enabled";
 
 /**
  * Exported straight from Shader Lab. If you tweak the composition,
@@ -148,6 +149,7 @@ const DEFAULT_RESOLUTION_SCALE = 0.75;
 const MAX_DEVICE_PIXEL_RATIO = 1.5;
 const MIN_RESOLUTION_SCALE = 0.25;
 const MAX_RESOLUTION_SCALE = 1;
+const SHADER_DISABLED_STORAGE_KEY = "nyx:shader-disabled";
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -393,10 +395,22 @@ export function ShaderBackground({
   // match (checking `navigator.gpu` can only happen client-side).
   // We flip to the real mode right after mount.
   const [mode, setMode] = useState<BackgroundMode>("css");
+  const [manuallyDisabled, setManuallyDisabled] = useState(false);
+  const renderEnabled = useShaderRenderEnabled();
 
   useEffect(() => {
-    setMode(supportsWebGPU() ? "shader" : "video");
+    setManuallyDisabled(
+      window.localStorage.getItem(SHADER_DISABLED_STORAGE_KEY) === "1"
+    );
   }, []);
+
+  useEffect(() => {
+    if (manuallyDisabled || !renderEnabled) {
+      setMode("css");
+      return;
+    }
+    setMode(supportsWebGPU() ? "shader" : "video");
+  }, [manuallyDisabled, renderEnabled]);
 
   const clampedResolutionScale = useMemo(
     () => clamp(resolutionScale, MIN_RESOLUTION_SCALE, MAX_RESOLUTION_SCALE),
@@ -408,31 +422,59 @@ export function ShaderBackground({
     return Math.min(window.devicePixelRatio || 1, MAX_DEVICE_PIXEL_RATIO);
   }, []);
 
+  const toggleShader = () => {
+    const nextDisabled = !manuallyDisabled;
+    setManuallyDisabled(nextDisabled);
+    if (nextDisabled) {
+      window.localStorage.setItem(SHADER_DISABLED_STORAGE_KEY, "1");
+    } else {
+      window.localStorage.removeItem(SHADER_DISABLED_STORAGE_KEY);
+    }
+  };
+
   return (
-    <div
-      aria-hidden
-      className="fixed inset-0 -z-10 h-full w-full overflow-hidden bg-black"
-    >
-      {mode === "shader" && (
-        <ShaderErrorBoundary onError={() => setMode("video")}>
-          <ShaderCanvas
-            targetFps={targetFps}
-            // Roll the capped device pixel ratio into the resolution
-            // scale so 4K/retina screens don't quietly undo the perf
-            // budget set by `resolutionScale`.
-            resolutionScale={clampedResolutionScale * clampedPixelRatioHint}
-            onFail={() => setMode("video")}
+    <>
+      <div
+        aria-hidden
+        className="fixed inset-0 -z-10 h-full w-full overflow-hidden bg-black"
+      >
+        {mode === "shader" && (
+          <ShaderErrorBoundary onError={() => setMode("video")}>
+            <ShaderCanvas
+              targetFps={targetFps}
+              // Roll the capped device pixel ratio into the resolution
+              // scale so 4K/retina screens don't quietly undo the perf
+              // budget set by `resolutionScale`.
+              resolutionScale={clampedResolutionScale * clampedPixelRatioHint}
+              onFail={() => setMode("video")}
+            />
+          </ShaderErrorBoundary>
+        )}
+        {mode === "video" && (
+          <VideoFallback
+            src={videoSrc}
+            poster={videoPoster}
+            onError={() => setMode("css")}
           />
-        </ShaderErrorBoundary>
-      )}
-      {mode === "video" && (
-        <VideoFallback
-          src={videoSrc}
-          poster={videoPoster}
-          onError={() => setMode("css")}
+        )}
+        {mode === "css" && <ShaderFallback />}
+      </div>
+
+      <button
+        type="button"
+        onClick={toggleShader}
+        aria-pressed={!manuallyDisabled}
+        title="Pausa o fundo animado para reduzir o uso da GPU"
+        className="fixed bottom-4 right-4 z-[70] inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/80 px-3 py-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/65 shadow-lg backdrop-blur transition hover:border-white/35 hover:text-white"
+      >
+        <span
+          aria-hidden
+          className={`h-2 w-2 rounded-full ${
+            manuallyDisabled ? "bg-white/35" : "bg-emerald-400"
+          }`}
         />
-      )}
-      {mode === "css" && <ShaderFallback />}
-    </div>
+        {manuallyDisabled ? "Ativar shader" : "Pausar shader"}
+      </button>
+    </>
   );
 }
