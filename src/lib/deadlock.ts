@@ -1,3 +1,5 @@
+import { cdnUrl } from "@/lib/cdn";
+
 const API = "https://api.deadlock-api.com/v1";
 const ASSETS = "https://assets-bucket.deadlock-api.com/assets-api-res";
 
@@ -145,7 +147,7 @@ function heroRenderUrl(heroName: string) {
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
-  return `/deadlock/hero-renders/${filename}.png`;
+  return cdnUrl(`/deadlock/hero-renders/${filename}.png`);
 }
 
 function badgeAssetUrl(badge: number | null) {

@@ -2,6 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { RankGameConfig } from "@/content/types";
+import { cdnUrl } from "@/lib/cdn";
+
+const HERO_MASK_URL = cdnUrl("/deadlock/ui/hero-mask.png");
+const MODAL_BACKGROUND_URL = cdnUrl("/deadlock/ui/modal-background.png");
 
 interface WidgetPayload {
   player: { rankName: string; rankIconUrl: string | null };
@@ -50,14 +54,24 @@ function MatchPortrait({
   lowestTier: boolean;
 }) {
   return (
-    <div className="relative h-[190px] w-[106px] shrink-0 sm:h-[210px] sm:w-[209px]">
+    <div className="relative h-[171px] w-[95px] shrink-0 sm:h-[189px] sm:w-[188px]">
       {heroUrl ? (
         <div
-          className={`absolute left-[31%] top-[19%] z-20 h-[70%] w-[38%] overflow-hidden ${
+          className="absolute left-[31%] top-[19%] z-20 h-[70%] w-[38%] overflow-hidden"
+          style={
             lowestTier
-              ? ""
-              : "[mask-image:url('/deadlock/ui/hero-mask.png')] [mask-position:center] [mask-repeat:no-repeat] [mask-size:100%_100%] [-webkit-mask-image:url('/deadlock/ui/hero-mask.png')] [-webkit-mask-position:center] [-webkit-mask-repeat:no-repeat] [-webkit-mask-size:100%_100%]"
-          }`}
+              ? undefined
+              : {
+                  maskImage: `url("${HERO_MASK_URL}")`,
+                  maskPosition: "center",
+                  maskRepeat: "no-repeat",
+                  maskSize: "100% 100%",
+                  WebkitMaskImage: `url("${HERO_MASK_URL}")`,
+                  WebkitMaskPosition: "center",
+                  WebkitMaskRepeat: "no-repeat",
+                  WebkitMaskSize: "100% 100%",
+                }
+          }
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -155,7 +169,10 @@ export function DeadlockWidgetModal({
       <button aria-label="Fechar widget" className="absolute inset-0" onClick={onClose} />
 
       <section className="relative h-full max-h-[820px] w-full max-w-[1650px] overflow-hidden bg-[#090b0c] shadow-[0_32px_120px_rgba(0,0,0,.9)] sm:h-[min(90vh,820px)]">
-        <div className="absolute inset-0 bg-[url('/deadlock/ui/modal-background.png')] bg-cover bg-center" />
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url("${MODAL_BACKGROUND_URL}")` }}
+        />
         <div className="absolute inset-0 bg-black/20" />
 
         <button
@@ -191,7 +208,7 @@ export function DeadlockWidgetModal({
             <div className="mt-5 grid gap-8 lg:mt-0">
               <section className="lg:absolute lg:bottom-[7%] lg:left-[3%] lg:z-20 lg:w-[47%]">
                 <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,172px)] lg:justify-center lg:gap-x-[100px]">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,188px)] lg:justify-center lg:gap-x-2">
                   {recentMatches.map((match) => (
                     <article key={match.matchId} className="relative min-w-0 text-center">
                       <MatchPortrait
@@ -201,8 +218,8 @@ export function DeadlockWidgetModal({
                         result={match.result}
                         lowestTier={match.averageBadge != null && Math.floor(match.averageBadge / 10) <= 1}
                       />
-                      <h4 className="mt-[-4px] whitespace-nowrap text-[16px] font-black uppercase italic leading-none text-white sm:text-[20px]">{match.heroName}</h4>
-                      <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[12px] font-bold text-white/65 sm:text-[14px]">
+                      <h4 className="mt-[-4px] whitespace-nowrap text-[15px] font-black uppercase italic leading-none text-white sm:text-[18px]">{match.heroName}</h4>
+                      <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11px] font-bold text-white/65 sm:text-[13px]">
                         {data?.assets.soulsIconUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={data.assets.soulsIconUrl} alt="Almas" className="h-[14px] w-[14px] brightness-0 invert opacity-75" />

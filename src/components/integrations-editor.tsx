@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cdnUrl } from "@/lib/cdn";
 
 interface RanksForm {
   deadlock: {
@@ -223,7 +224,7 @@ export function IntegrationsEditor() {
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="/steam/sign-in-through-steam.png"
+                    src={cdnUrl("/steam/sign-in-through-steam.png")}
                     alt="Sign in through Steam"
                     width={180}
                     height={35}
