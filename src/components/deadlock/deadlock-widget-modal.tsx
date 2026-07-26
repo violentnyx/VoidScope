@@ -196,7 +196,7 @@ export function DeadlockWidgetModal({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={rankIconUrl} alt="" className="h-[180px] w-[180px] object-contain sm:h-[294px] sm:w-[294px]" />
             ) : null}
-            <div className="-translate-y-[24px] sm:-translate-y-[64px]">
+            <div className="relative z-30 -translate-y-[24px] sm:-translate-y-[64px]">
               <h2
                 className="deadlock-lettering text-[29px] font-black uppercase leading-none sm:text-[44px]"
                 style={{ color: rankColor ?? "#fff" }}
