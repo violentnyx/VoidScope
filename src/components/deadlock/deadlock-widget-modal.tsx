@@ -316,7 +316,7 @@ export function DeadlockWidgetModal({
                       <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[10px] font-bold text-white/65 sm:text-[12px]">
                         {data?.assets.soulsIconUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={data.assets.soulsIconUrl} alt="Almas" className="h-[14px] w-[14px] brightness-0 invert opacity-75" />
+                          <img src={data.assets.soulsIconUrl} alt="Almas" className="h-[16px] w-[9px] object-contain opacity-90" />
                         ) : null}
                         <span>{formatSouls(match.souls)}</span>
                         <span className="text-white/30">·</span>

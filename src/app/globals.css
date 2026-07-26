@@ -41,6 +41,10 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+
+  .deadlock-hero-slide-in {
+    animation-duration: 700ms !important;
+  }
 }
 
 :focus-visible {

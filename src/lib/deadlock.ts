@@ -139,7 +139,7 @@ function soulsIconUrl(icons: JsonRecord) {
   if (!hudIcons || typeof hudIcons !== "object" || Array.isArray(hudIcons)) return "";
   return firstString(
     hudIcons as JsonRecord,
-    ["icon_souls.svg", "icon_soul.svg"],
+    ["icon_soul.svg", "icon_souls.svg"],
     "",
   );
 }
