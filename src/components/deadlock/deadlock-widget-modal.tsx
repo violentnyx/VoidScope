@@ -54,7 +54,7 @@ function MatchPortrait({
   lowestTier: boolean;
 }) {
   return (
-    <div className="relative h-[171px] w-[95px] shrink-0 sm:h-[189px] sm:w-[188px]">
+    <div className="relative h-[154px] w-[86px] shrink-0 sm:h-[170px] sm:w-[169px]">
       {heroUrl ? (
         <div
           className="absolute left-[31%] top-[19%] z-20 h-[70%] w-[38%] overflow-hidden"
@@ -208,7 +208,7 @@ export function DeadlockWidgetModal({
             <div className="mt-5 grid gap-8 lg:mt-0">
               <section className="lg:absolute lg:bottom-[7%] lg:left-[3%] lg:z-20 lg:w-[47%]">
                 <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
-                <div className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,188px)] lg:justify-center lg:gap-x-2">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,169px)] lg:justify-center lg:gap-x-1">
                   {recentMatches.map((match) => (
                     <article key={match.matchId} className="relative min-w-0 text-center">
                       <MatchPortrait
@@ -218,8 +218,8 @@ export function DeadlockWidgetModal({
                         result={match.result}
                         lowestTier={match.averageBadge != null && Math.floor(match.averageBadge / 10) <= 1}
                       />
-                      <h4 className="mt-[-4px] whitespace-nowrap text-[15px] font-black uppercase italic leading-none text-white sm:text-[18px]">{match.heroName}</h4>
-                      <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[11px] font-bold text-white/65 sm:text-[13px]">
+                      <h4 className="mt-[-4px] whitespace-nowrap text-[14px] font-black uppercase italic leading-none text-white sm:text-[16px]">{match.heroName}</h4>
+                      <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[10px] font-bold text-white/65 sm:text-[12px]">
                         {data?.assets.soulsIconUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={data.assets.soulsIconUrl} alt="Almas" className="h-[14px] w-[14px] brightness-0 invert opacity-75" />
