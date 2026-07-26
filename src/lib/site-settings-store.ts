@@ -12,6 +12,7 @@ import path from "path";
 export type PageStatus = "ativo" | "staging";
 
 export interface SiteSettings {
+  introEnabled?: boolean;
   pages?: Record<string, PageStatus>;
   sections?: Record<string, boolean>;
 }
@@ -33,6 +34,7 @@ export async function saveSiteSettings(partial: SiteSettings): Promise<SiteSetti
   const current = await getSiteSettings();
 
   const merged: SiteSettings = {
+    introEnabled: partial.introEnabled ?? current.introEnabled,
     pages: { ...current.pages, ...partial.pages },
     sections: { ...current.sections, ...partial.sections },
   };

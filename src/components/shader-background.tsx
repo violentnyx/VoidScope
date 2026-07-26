@@ -434,7 +434,7 @@ export function ShaderBackground({
     <>
       <div
         aria-hidden
-        className="fixed inset-0 -z-10 h-full w-full overflow-hidden bg-black"
+        className="site-shader-plane fixed inset-0 -z-10 h-full w-full overflow-hidden bg-black"
       >
         {mode === "shader" && (
           <ShaderErrorBoundary onError={() => setMode("video")}>
@@ -463,7 +463,7 @@ export function ShaderBackground({
         onClick={toggleShader}
         aria-pressed={!manuallyDisabled}
         title="Pausa o fundo animado para reduzir o uso da GPU"
-        className="fixed bottom-4 right-4 z-[70] inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/80 px-3 py-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/65 shadow-lg backdrop-blur transition hover:border-white/35 hover:text-white"
+        className="site-chrome-control fixed bottom-4 right-4 z-[70] inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/80 px-3 py-2 text-[11px] font-bold uppercase tracking-[.08em] text-white/65 shadow-lg backdrop-blur transition hover:border-white/35 hover:text-white"
       >
         <span
           aria-hidden

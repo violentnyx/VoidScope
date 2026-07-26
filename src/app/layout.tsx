@@ -4,8 +4,10 @@ import { ShaderBackground } from "@/components/shader-background";
 import { SiteNav } from "@/components/site-nav";
 import { ScrollSound } from "@/components/scroll-sound";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteIntro } from "@/components/intro/site-intro";
 import { getContent, getPagesStatus, PAGE_ROUTES } from "@/lib/get-content";
 import { isAdminRequest } from "@/lib/is-admin-request";
+import { getSiteSettings } from "@/lib/site-settings-store";
 import "./globals.css";
 
 const mono = JetBrains_Mono({
@@ -30,10 +32,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [content, pagesStatus, isAdmin] = await Promise.all([
+  const [content, pagesStatus, isAdmin, siteSettings] = await Promise.all([
     getContent(),
     getPagesStatus(),
     isAdminRequest(),
+    getSiteSettings(),
   ]);
 
   // Página em Staging some do header pra quem não é admin — quem
@@ -50,13 +53,16 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className={`${mono.variable} ${sans.variable} h-full`}>
       <body className="flex min-h-full flex-col font-sans text-white antialiased">
+        <SiteIntro enabled={siteSettings.introEnabled ?? true} />
         <ShaderBackground />
         <ScrollSound />
-        <SiteNav brand={content.brand} items={navItems} />
-        <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-14 pb-10 sm:px-6 sm:pt-20">
-          {children}
-        </main>
-        <SiteFooter brand={content.brand} />
+        <div className="site-content-shell flex min-h-screen flex-1 flex-col">
+          <SiteNav brand={content.brand} items={navItems} />
+          <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-14 pb-10 sm:px-6 sm:pt-20">
+            {children}
+          </main>
+          <SiteFooter brand={content.brand} />
+        </div>
       </body>
     </html>
   );

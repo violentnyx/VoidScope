@@ -1,0 +1,16 @@
+export const introConfig = {
+  powerSoundSrc: "/intro/power-on.mp3",
+  powerSoundVolume: 0.6,
+  powerDurationMs: 1500,
+  logoSrc: "/intro/logo.mp4",
+  logoSoundSrc: "/intro/logo-appear.mp3",
+  logoSoundVolume: 0.65,
+  glitchSrc: "/intro/glitched.mp4",
+  glitchSoundSrc: "/intro/vhs-glitch.mp3",
+  glitchSoundVolume: 0.75,
+  shaderEntrySoundSrc: "/intro/shader-entry.mp3",
+  shaderEntrySoundVolume: 0.65,
+  readyDelayMs: 1850,
+  glitchDurationMs: 2000,
+  exitDurationMs: 500,
+} as const;

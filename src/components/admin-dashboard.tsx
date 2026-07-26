@@ -66,6 +66,7 @@ export function AdminDashboard() {
 
   const [pages, setPages] = useState<Record<string, PageStatus>>({});
   const [sections, setSections] = useState<Record<string, boolean>>({});
+  const [introEnabled, setIntroEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
@@ -80,7 +81,12 @@ export function AdminDashboard() {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data: { pages: Record<string, PageStatus>; sections: Record<string, boolean> }) => {
+      .then((data: {
+        introEnabled: boolean;
+        pages: Record<string, PageStatus>;
+        sections: Record<string, boolean>;
+      }) => {
+        setIntroEnabled(data.introEnabled ?? true);
         setPages(data.pages ?? {});
         setSections(data.sections ?? {});
       })
@@ -121,7 +127,7 @@ export function AdminDashboard() {
       const res = await fetch("/api/admin/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pages, sections }),
+        body: JSON.stringify({ introEnabled, pages, sections }),
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
@@ -201,6 +207,41 @@ export function AdminDashboard() {
         <p className="text-sm text-red-400">{loadError}</p>
       ) : (
         <>
+          {/* ---------- Intro ---------- */}
+          <section className="mb-10">
+            <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
+              Introdução do site
+            </h2>
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-black/60 px-4 py-3.5">
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-white">
+                  Exibir intro ao acessar
+                </div>
+                <div className="mt-0.5 text-xs text-white/55">
+                  Mostra o interruptor, a logo, os sons e a transição antes do site.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !introEnabled;
+                  setIntroEnabled(next);
+                  setSaveState("idle");
+                  playUISound(next ? "toggleOn" : "toggleOff");
+                }}
+                aria-pressed={introEnabled}
+                className={[
+                  "shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
+                  introEnabled
+                    ? "bg-white text-black"
+                    : "border border-white/15 text-white/50 hover:bg-white hover:text-black",
+                ].join(" ")}
+              >
+                {introEnabled ? "Ativada" : "Desativada"}
+              </button>
+            </div>
+          </section>
+
           {/* ---------- Páginas ---------- */}
           <section className="mb-10">
             <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">

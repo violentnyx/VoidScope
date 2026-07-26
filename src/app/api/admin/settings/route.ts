@@ -36,7 +36,11 @@ export async function GET() {
     otherSocials: content.home.otherSocials.enabled,
   };
 
-  return NextResponse.json({ pages, sections });
+  return NextResponse.json({
+    introEnabled: settings.introEnabled ?? true,
+    pages,
+    sections,
+  });
 }
 
 // POST: recebe os toggles marcados no painel e grava — a partir daqui
@@ -56,7 +60,15 @@ export async function POST(request: NextRequest) {
   }
 
   const input = body as Record<string, unknown>;
-  const partial: { pages?: Record<string, PageStatus>; sections?: Record<string, boolean> } = {};
+  const partial: {
+    introEnabled?: boolean;
+    pages?: Record<string, PageStatus>;
+    sections?: Record<string, boolean>;
+  } = {};
+
+  if (typeof input.introEnabled === "boolean") {
+    partial.introEnabled = input.introEnabled;
+  }
 
   if (typeof input.pages === "object" && input.pages !== null) {
     const pagesInput = input.pages as Record<string, unknown>;
