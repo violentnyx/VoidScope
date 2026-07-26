@@ -206,7 +206,7 @@ export function DeadlockWidgetModal({
             <div className="grid h-[520px] place-items-center text-center text-white/70">{error}</div>
           ) : (
             <div className="mt-5 grid gap-8 lg:mt-0">
-              <section className="lg:absolute lg:bottom-[7%] lg:left-[-4%] lg:z-20 lg:w-[47%]">
+              <section className="lg:absolute lg:bottom-[12%] lg:left-[-4%] lg:z-20 lg:w-[47%]">
                 <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
                 <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,161px)] lg:justify-center lg:gap-x-1">
                   {recentMatches.map((match) => (
