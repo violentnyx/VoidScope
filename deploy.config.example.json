@@ -1,9 +1,10 @@
 {
   "remote": "origin",
   "branch": "main",
-  "githubOwner": "SEU_USUARIO",
-  "githubRepository": "nyx-site",
+  "githubOwner": "6Horas",
+  "githubRepository": "VoidScope",
   "sshHost": "ubuntu@SEU_SERVIDOR",
-  "appPath": "/var/www/nyx-site",
+  "identityFile": "C:/Users/SEU_USUARIO/.ssh/codex-nyx-deploy",
+  "appPath": "/home/ubuntu/voidscope-source",
   "serviceName": "nyx-site"
 }

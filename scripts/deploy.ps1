@@ -25,6 +25,16 @@ Assert-SafeValue "sshHost" $Config.sshHost "^[A-Za-z0-9._@-]+$"
 Assert-SafeValue "appPath" $Config.appPath "^/[A-Za-z0-9._/-]+$"
 Assert-SafeValue "serviceName" $Config.serviceName "^[A-Za-z0-9_.@-]+$"
 
+$SshArgs = @()
+if ($Config.identityFile) {
+  $IdentityFile = [System.IO.Path]::GetFullPath([string]$Config.identityFile)
+  if (-not (Test-Path -LiteralPath $IdentityFile -PathType Leaf)) {
+    throw "Arquivo de identidade SSH nao encontrado."
+  }
+  $SshArgs += @("-i", $IdentityFile, "-o", "BatchMode=yes")
+}
+$SshArgs += [string]$Config.sshHost
+
 Push-Location $ProjectDir
 try {
   npm run build
@@ -48,7 +58,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "Falha ao enviar o commit ao remote." }
 
   $RemoteCommand = "cd '$($Config.appPath)' && bash scripts/server-update.sh '$($Config.branch)' '$($Config.serviceName)'"
-  ssh $Config.sshHost $RemoteCommand
+  & ssh @SshArgs $RemoteCommand
   if ($LASTEXITCODE -ne 0) { throw "O servidor nao concluiu a atualizacao." }
 
   $Commit = (git rev-parse --short HEAD).Trim()
