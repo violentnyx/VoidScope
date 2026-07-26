@@ -242,7 +242,7 @@ export function DeadlockWidgetModal({
                       <img
                         src={hero.renderImageUrl}
                         alt={hero.heroName}
-                        className={`pointer-events-none absolute inset-[-5%] h-[110%] w-[110%] object-contain object-center drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
+                        className={`pointer-events-none absolute right-0 top-[-10%] h-[120%] w-[120%] object-contain object-right drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
                       />
                     ) : null}
                     <div className="absolute inset-x-0 bottom-[5%] z-20 text-center">
