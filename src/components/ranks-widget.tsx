@@ -94,7 +94,7 @@ export function RanksWidget({ content }: { content: RanksWidgetContent }) {
   if (!content.enabled) return null;
 
   return (
-    <div className="flex h-full min-h-[220px] flex-col rounded-2xl border border-dashed border-white/20 bg-black/60 p-5">
+    <div className="site-panel flex h-full min-h-[220px] flex-col rounded-2xl border border-dashed border-white/20 bg-black/60 p-5">
       <span className="font-mono text-[11px] uppercase tracking-widest text-white/45">
         {content.eyebrow}
       </span>

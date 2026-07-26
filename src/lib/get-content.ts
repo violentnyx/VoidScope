@@ -2,6 +2,7 @@ import { siteContent } from "@/content/site-content";
 import { getOverrides } from "@/lib/content-store";
 import { getSiteSettings, type PageStatus } from "@/lib/site-settings-store";
 import { KNOWN_PAGE_IDS, PAGE_ROUTES, type PageId } from "@/lib/page-ids";
+import { persistentUploadUrl } from "@/lib/uploaded-assets";
 import type {
   ContactContent,
   HomeContent,
@@ -40,6 +41,7 @@ export async function getContent(): Promise<SiteContent> {
     brand: {
       ...siteContent.brand,
       ...overrides.brand,
+      logoSrc: persistentUploadUrl(overrides.brand?.logoSrc ?? siteContent.brand.logoSrc),
     },
     contact: {
       ...siteContent.contact,
@@ -51,6 +53,9 @@ export async function getContent(): Promise<SiteContent> {
       identity: {
         ...siteContent.home.identity,
         ...overrides.identity,
+        avatarSrc: persistentUploadUrl(
+          overrides.identity?.avatarSrc ?? siteContent.home.identity.avatarSrc,
+        ),
       },
       twitchLive: {
         ...siteContent.home.twitchLive,
@@ -109,7 +114,11 @@ export async function getContent(): Promise<SiteContent> {
       otherSocials: {
         ...siteContent.home.otherSocials,
         ...overrides.socialMedia,
-        items: overrides.socialMedia?.items ?? siteContent.home.otherSocials.items,
+        heading: overrides.socialMedia?.heading ?? "Contatos",
+        items:
+          overrides.contact?.otherContacts ??
+          overrides.socialMedia?.items ??
+          siteContent.contact.otherContacts,
         enabled: sections.otherSocials ?? siteContent.home.otherSocials.enabled,
       },
     },

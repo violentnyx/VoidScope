@@ -28,6 +28,23 @@
   animation: deadlock-hero-slide-in 700ms cubic-bezier(.16, 1, .3, 1) both;
 }
 
+@keyframes spotify-album-ping-pong {
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+  85%,
+  100% {
+    transform: translateY(calc(-1 * var(--spotify-album-scroll-distance)));
+  }
+}
+
+.spotify-album-ping-pong {
+  animation: spotify-album-ping-pong
+    var(--spotify-album-scroll-duration, 10s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+
 @theme inline {
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
@@ -65,4 +82,18 @@
 
 .shader-lab-host canvas {
   object-fit: cover;
+}
+
+/*
+ * TODO(admin): expose these two tokens in an Appearance section so the
+ * border style can be switched between sharp, soft and rounded in Admin.
+ */
+:root {
+  --site-panel-radius: 0px;
+  --site-panel-border-width: 0px;
+}
+
+.site-panel {
+  border-radius: var(--site-panel-radius) !important;
+  border-width: var(--site-panel-border-width) !important;
 }

@@ -5,9 +5,8 @@ import { NowPlayingWidget } from "@/components/now-playing-widget";
 import { RanksWidget } from "@/components/ranks-widget";
 import { ChannelGroupBlock } from "@/components/channel-group";
 import { MaintenanceScreen } from "@/components/maintenance-screen";
-import { getHomeContent, getPagesStatus } from "@/lib/get-content";
+import { getContactContent, getHomeContent, getPagesStatus } from "@/lib/get-content";
 import { isAdminRequest } from "@/lib/is-admin-request";
-import { ContactSocialEditor } from "@/components/contact-social-editor";
 
 export default async function HomePage() {
   const pages = await getPagesStatus();
@@ -15,13 +14,19 @@ export default async function HomePage() {
     return <MaintenanceScreen />;
   }
 
-  const home = await getHomeContent();
-  const admin = await isAdminRequest();
+  const [home, contact] = await Promise.all([
+    getHomeContent(),
+    getContactContent(),
+  ]);
 
   return (
     <div className="flex flex-col gap-16 sm:gap-24">
       <section className="grid grid-cols-1 items-center gap-12 sm:grid-cols-2 sm:gap-8">
-        <HeroIdentityBlock identity={home.identity} />
+        <HeroIdentityBlock
+          identity={home.identity}
+          socials={home.otherSocials.items}
+          email={contact.email}
+        />
         <TwitchLiveCard content={home.twitchLive} />
       </section>
 
@@ -33,7 +38,6 @@ export default async function HomePage() {
       </section>
 
       <div>
-        {admin && <ContactSocialEditor mode="socials" compact />}
         <ChannelGroupBlock group={home.youtube} />
         <ChannelGroupBlock group={home.tiktok} />
         <ChannelGroupBlock group={home.otherSocials} />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { NowPlayingWidgetContent } from "@/content/types";
 import type { SpotifyNowPlayingTrack, LastfmTrack, TopListItem } from "./now-playing-types";
 import { useDominantColor } from "@/hooks/use-dominant-color";
@@ -9,6 +9,57 @@ import { NowPlayingModal } from "./now-playing-modal";
 
 const LASTFM_POLL_MS = 30_000;
 const SPOTIFY_POLL_MS = 10_000;
+
+function ScrollingAlbumTitle({ text }: { text: string }) {
+  const viewportRef = useRef<HTMLSpanElement | null>(null);
+  const trackRef = useRef<HTMLSpanElement | null>(null);
+  const [scrollDistance, setScrollDistance] = useState(0);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    const track = trackRef.current;
+    if (!viewport || !track) return;
+
+    const measure = () => {
+      setScrollDistance(Math.max(0, track.scrollHeight - viewport.clientHeight));
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(viewport);
+    observer.observe(track);
+
+    return () => observer.disconnect();
+  }, [text]);
+
+  const animationStyle = {
+    "--spotify-album-scroll-distance": `${scrollDistance}px`,
+    "--spotify-album-scroll-duration": `${Math.min(18, Math.max(8, 8 + scrollDistance / 18))}s`,
+  } as CSSProperties;
+
+  return (
+    <span
+      ref={viewportRef}
+      className="relative hidden w-[14px] shrink-0 self-stretch overflow-hidden sm:block"
+      title={text}
+    >
+      <span
+        ref={trackRef}
+        className={`absolute inset-x-0 top-0 block w-max ${
+          scrollDistance > 0 ? "spotify-album-ping-pong" : ""
+        }`}
+        style={animationStyle}
+      >
+        <span
+          className="block rotate-180 whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-white/40"
+          style={{ writingMode: "vertical-rl" }}
+        >
+          {text}
+        </span>
+      </span>
+    </span>
+  );
+}
 
 export function NowPlayingWidget({ content }: { content: NowPlayingWidgetContent }) {
   const [lastfmTrack, setLastfmTrack] = useState<LastfmTrack | null>(null);
@@ -114,17 +165,12 @@ export function NowPlayingWidget({ content }: { content: NowPlayingWidgetContent
       <button
         type="button"
         onClick={() => setModalOpen(true)}
-        className="flex h-full min-h-[220px] w-full flex-row gap-4 rounded-2xl border border-dashed border-white/20 bg-black/60 p-5 text-left transition-colors hover:border-white/35"
+        className="site-panel flex h-full min-h-[220px] w-full flex-row gap-4 rounded-2xl border border-dashed border-white/20 bg-black/60 p-5 text-left transition-colors hover:border-white/35"
       >
         {/* Coluna esquerda: capa + nome do album vertical + progresso + faixa/artista */}
         <div className="flex flex-1 gap-3">
           {(track || fallback) && (
-            <span
-              className="hidden shrink-0 rotate-180 whitespace-nowrap font-mono text-[11px] uppercase tracking-widest text-white/40 sm:block"
-              style={{ writingMode: "vertical-rl" }}
-            >
-              {track?.album || fallback?.album || ""}
-            </span>
+            <ScrollingAlbumTitle text={track?.album || fallback?.album || ""} />
           )}
 
           <div className="flex min-w-0 flex-1 flex-col justify-between">

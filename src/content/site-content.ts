@@ -164,6 +164,8 @@ export const siteContent: SiteContent = {
     otherContacts: [
       { title: "LinkedIn", href: "#" },
       { title: "Portfolio completo", href: "#" },
+      { title: "Twitter / X", href: "#" },
+      { title: "Instagram", href: "#" },
     ],
   },
 };

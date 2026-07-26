@@ -7,7 +7,9 @@ import crypto from "crypto";
 // só funciona em servidor com disco persistente (Lightsail, etc.), não
 // em hospedagem serverless/edge.
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+// `data/` aponta para o volume persistente no Lightsail. Nunca grave uploads
+// dentro de `public/`: cada deploy troca a release e apagaria esses arquivos.
+const UPLOAD_DIR = path.join(process.cwd(), "data", "uploads");
 const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES: Record<string, string> = {
   "image/png": "png",
@@ -42,5 +44,5 @@ export async function POST(request: NextRequest) {
   await mkdir(UPLOAD_DIR, { recursive: true });
   await writeFile(path.join(UPLOAD_DIR, filename), bytes);
 
-  return NextResponse.json({ ok: true, url: `/uploads/${filename}` });
+  return NextResponse.json({ ok: true, url: `/api/uploads/${filename}` });
 }

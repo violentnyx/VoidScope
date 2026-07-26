@@ -97,7 +97,7 @@ export function TwitchLiveCard({ content }: { content: TwitchLiveContent }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black">
+      <div className="site-panel relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black">
         {isLive && status?.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

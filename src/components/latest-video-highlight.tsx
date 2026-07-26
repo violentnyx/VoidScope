@@ -44,7 +44,7 @@ export function LatestVideoHighlight({ content }: { content: LatestVideoContent 
 
   return (
     <div className="grid grid-cols-1 items-center gap-6 sm:grid-cols-2 sm:gap-10">
-      <div className="aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black/60">
+      <div className="site-panel aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-black/60">
         {video?.thumbnailSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
