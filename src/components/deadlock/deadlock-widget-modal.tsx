@@ -13,6 +13,7 @@ interface WidgetPayload {
   recentMatches: Array<{
     matchId: string;
     heroName: string;
+    nameImageUrl: string | null;
     portraitImageUrl: string | null;
     result: "win" | "loss" | "unknown";
     kills: number;
@@ -24,6 +25,7 @@ interface WidgetPayload {
   }>;
   mostPlayedHero: null | {
     heroName: string;
+    nameImageUrl: string | null;
     renderImageUrl: string;
     matches: number;
     wins: number;
@@ -218,7 +220,20 @@ export function DeadlockWidgetModal({
                         result={match.result}
                         lowestTier={match.averageBadge != null && Math.floor(match.averageBadge / 10) <= 1}
                       />
-                      <h4 className="mt-[-4px] whitespace-nowrap text-[14px] font-black uppercase italic leading-none text-white sm:text-[16px]">{match.heroName}</h4>
+                      <div className="mt-[-4px] flex h-[20px] items-center justify-center">
+                        {match.nameImageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={match.nameImageUrl}
+                            alt={match.heroName}
+                            className="h-[18px] w-auto max-w-[120px] object-contain"
+                          />
+                        ) : (
+                          <h4 className="whitespace-nowrap text-[14px] font-black uppercase italic leading-none text-white sm:text-[16px]">
+                            {match.heroName}
+                          </h4>
+                        )}
+                      </div>
                       <div className="mt-2 flex items-center justify-center gap-1.5 whitespace-nowrap text-[10px] font-bold text-white/65 sm:text-[12px]">
                         {data?.assets.soulsIconUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -246,7 +261,18 @@ export function DeadlockWidgetModal({
                       />
                     ) : null}
                     <div className="absolute inset-x-0 bottom-[5%] z-20 text-center">
-                      <h4 className="font-serif text-[68px] font-black uppercase italic leading-[.8] tracking-[-.07em] text-white drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:text-[96px]">{hero.heroName}</h4>
+                      {hero.nameImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={hero.nameImageUrl}
+                          alt={hero.heroName}
+                          className="mx-auto h-[68px] w-auto max-w-[82%] object-contain drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:h-[96px]"
+                        />
+                      ) : (
+                        <h4 className="font-serif text-[68px] font-black uppercase italic leading-[.8] tracking-[-.07em] text-white drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:text-[96px]">
+                          {hero.heroName}
+                        </h4>
+                      )}
                       <p className="mt-2 text-[14px] font-bold text-white/60 sm:text-[16px]">{formatWinRate(hero.winRate)}% WR · {hero.matches} partidas</p>
                     </div>
                   </>

@@ -7,6 +7,7 @@ export interface DeadlockMatchSummary {
   matchId: string;
   heroId: number | null;
   heroName: string;
+  nameImageUrl: string | null;
   portraitImageUrl: string | null;
   result: "win" | "loss" | "unknown";
   kills: number;
@@ -29,6 +30,7 @@ export interface DeadlockWidgetPayload {
   mostPlayedHero: null | {
     heroId: number | null;
     heroName: string;
+    nameImageUrl: string | null;
     renderImageUrl: string;
     matches: number;
     wins: number;
@@ -197,6 +199,7 @@ export async function getDeadlockWidget(
     const playerTeam = firstNumber(match, ["player_team", "team"], 0);
     const averageBadge = resolveAverageBadge(metadata[index], playerTeam);
     const result = matchResult(match);
+    const nameImageUrl = firstString(images, ["name_image"], "");
     const gloatImageUrl = firstString(images, ["hero_card_gloat_webp", "hero_card_gloat"], "");
     const criticalImageUrl = firstString(images, ["hero_card_critical_webp", "hero_card_critical"], "");
 
@@ -204,6 +207,7 @@ export async function getDeadlockWidget(
       matchId: String(firstNumber(match, ["match_id", "matchId", "id"], index)),
       heroId,
       heroName,
+      nameImageUrl: nameImageUrl || null,
       portraitImageUrl: (result === "win" ? gloatImageUrl : criticalImageUrl) || gloatImageUrl || criticalImageUrl || null,
       result,
       kills: firstNumber(match, ["player_kills", "kills"]),
@@ -231,6 +235,7 @@ export async function getDeadlockWidget(
   const topEntry = [...stats.entries()].sort((a, b) => b[1].matches - a[1].matches)[0] ?? null;
   const topHero = topEntry ? findHero(heroes, topEntry[0]) : null;
   const topHeroName = firstString(topHero ?? {}, ["name", "display_name"], "Unknown");
+  const topHeroNameImageUrl = firstString(heroImages(topHero), ["name_image"], "");
 
   return {
     player: { rankName, rankIconUrl },
@@ -241,6 +246,7 @@ export async function getDeadlockWidget(
     mostPlayedHero: topEntry ? {
       heroId: topEntry[0],
       heroName: topHeroName,
+      nameImageUrl: topHeroNameImageUrl || null,
       renderImageUrl: heroRenderUrl(topHeroName),
       matches: topEntry[1].matches,
       wins: topEntry[1].wins,
