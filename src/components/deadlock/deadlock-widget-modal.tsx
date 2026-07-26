@@ -191,10 +191,10 @@ export function DeadlockWidgetModal({
         </button>
 
         <div className="relative z-10 h-full overflow-y-auto px-5 py-7 sm:px-10 sm:py-9 lg:overflow-hidden">
-          <header className="flex h-[92px] items-center gap-4">
+          <header className="flex h-[180px] items-center gap-4 sm:h-[294px]">
             {rankIconUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={rankIconUrl} alt="" className="h-[78px] w-[78px] object-contain sm:h-[92px] sm:w-[92px]" />
+              <img src={rankIconUrl} alt="" className="h-[180px] w-[180px] object-contain sm:h-[294px] sm:w-[294px]" />
             ) : null}
             <div>
               <h2
