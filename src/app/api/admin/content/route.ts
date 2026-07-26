@@ -25,6 +25,7 @@ export async function GET() {
     integrations: {
       twitchChannelLogin: content.home.twitchLive.channelLogin,
       lastfmUsername: content.home.nowPlayingWidget.lastfmUsername,
+      youtubeChannelIds: content.home.latestVideo.channelIds,
       ranks: {
         deadlock: {
           steamAccountId: deadlock?.steamAccountId ?? "",
@@ -130,7 +131,17 @@ export async function POST(request: NextRequest) {
         if (typeof raw !== "object" || raw === null) return [];
         const item = raw as Record<string, unknown>;
         if (typeof item.title !== "string") return [];
-        return [{ title: item.title.slice(0, 80), href: typeof item.href === "string" ? item.href.slice(0, 500) : "" }];
+        const placements = Array.isArray(item.placements)
+          ? item.placements.filter(
+              (value): value is "bio" | "page" =>
+                value === "bio" || value === "page",
+            )
+          : undefined;
+        return [{
+          title: item.title.slice(0, 80),
+          href: typeof item.href === "string" ? item.href.slice(0, 500) : "",
+          placements,
+        }];
       });
     }
   }
@@ -144,7 +155,17 @@ export async function POST(request: NextRequest) {
         if (typeof raw !== "object" || raw === null) return [];
         const item = raw as Record<string, unknown>;
         if (typeof item.title !== "string") return [];
-        return [{ title: item.title.slice(0, 80), href: typeof item.href === "string" ? item.href.slice(0, 500) : "" }];
+        const placements = Array.isArray(item.placements)
+          ? item.placements.filter(
+              (value): value is "bio" | "page" =>
+                value === "bio" || value === "page",
+            )
+          : undefined;
+        return [{
+          title: item.title.slice(0, 80),
+          href: typeof item.href === "string" ? item.href.slice(0, 500) : "",
+          placements,
+        }];
       });
     }
   }
@@ -158,6 +179,13 @@ export async function POST(request: NextRequest) {
     }
     if (typeof integrations.lastfmUsername === "string") {
       partial.integrations.lastfmUsername = integrations.lastfmUsername.trim().slice(0, 60);
+    }
+    if (Array.isArray(integrations.youtubeChannelIds)) {
+      partial.integrations.youtubeChannelIds = integrations.youtubeChannelIds
+        .filter((value): value is string => typeof value === "string")
+        .map((value) => value.trim())
+        .filter((value) => /^UC[A-Za-z0-9_-]{20,30}$/.test(value))
+        .slice(0, 10);
     }
 
     if (typeof integrations.ranks === "object" && integrations.ranks !== null) {

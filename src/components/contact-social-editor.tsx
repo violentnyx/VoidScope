@@ -78,7 +78,7 @@ export function ContactSocialEditor() {
       ...current,
       otherContacts: [
         ...current.otherContacts,
-        { title: "Nova rede", href: "https://" },
+        { title: "Nova rede", href: "https://", placements: ["bio", "page"] },
       ],
     }));
   }
@@ -101,6 +101,24 @@ export function ContactSocialEditor() {
       [next[index], next[destination]] = [next[destination], next[index]];
       return { ...current, otherContacts: next };
     });
+    setSaveState("idle");
+  }
+
+  function togglePlacement(index: number, placement: "bio" | "page") {
+    playUISound("press");
+    setContact((current) => ({
+      ...current,
+      otherContacts: current.otherContacts.map((item, itemIndex) => {
+        if (itemIndex !== index) return item;
+        const placements = item.placements ?? ["bio", "page"];
+        return {
+          ...item,
+          placements: placements.includes(placement)
+            ? placements.filter((value) => value !== placement)
+            : [...placements, placement],
+        };
+      }),
+    }));
     setSaveState("idle");
   }
 
@@ -193,7 +211,7 @@ export function ContactSocialEditor() {
               Links e redes sociais
             </h3>
             <p className="text-xs text-white/50">
-              O nome identifica automaticamente o ícone da rede.
+              O nome ou a URL identifica o ícone. Escolha onde cada link aparece.
             </p>
           </div>
           <button
@@ -208,8 +226,8 @@ export function ContactSocialEditor() {
         <div className="space-y-2">
           {contact.otherContacts.map((item, index) => (
             <div
-              key={`${item.title}-${index}`}
-              className="grid gap-2 bg-white/[.035] p-3 sm:grid-cols-[1fr_2fr_auto]"
+              key={index}
+              className="grid gap-2 bg-white/[.035] p-3 sm:grid-cols-[1fr_2fr_auto_auto]"
             >
               <input
                 value={item.title}
@@ -227,6 +245,33 @@ export function ContactSocialEditor() {
                 placeholder="https://"
                 className="border border-white/10 bg-black/60 px-3 py-2 text-sm"
               />
+              <div className="flex gap-1">
+                {(["bio", "page"] as const).map((placement) => {
+                  const active = (item.placements ?? ["bio", "page"]).includes(
+                    placement,
+                  );
+                  return (
+                    <button
+                      key={placement}
+                      type="button"
+                      onClick={() => togglePlacement(index, placement)}
+                      aria-pressed={active}
+                      title={
+                        placement === "bio"
+                          ? "Mostrar junto ao perfil"
+                          : "Mostrar como botão grande no final da Home"
+                      }
+                      className={`h-10 min-w-12 border px-2 text-[10px] font-bold uppercase ${
+                        active
+                          ? "border-white bg-white text-black"
+                          : "border-white/15 text-white/40"
+                      }`}
+                    >
+                      {placement}
+                    </button>
+                  );
+                })}
+              </div>
               <div className="flex gap-1">
                 <button
                   type="button"

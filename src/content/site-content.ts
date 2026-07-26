@@ -37,6 +37,7 @@ export const siteContent: SiteContent = {
       tag: "Filmmaker",
       bio: "Filmmaker. Links, redes e canais.",
     },
+    profileSocialButtonsEnabled: true,
 
     twitchLive: {
       enabled: true,
@@ -168,10 +169,10 @@ export const siteContent: SiteContent = {
     email: "seu-email@exemplo.com",
     emailCtaLabel: "Enviar e-mail",
     otherContacts: [
-      { title: "LinkedIn", href: "#" },
-      { title: "Portfolio completo", href: "#" },
-      { title: "Twitter / X", href: "#" },
-      { title: "Instagram", href: "#" },
+      { title: "LinkedIn", href: "#", placements: ["bio", "page"] },
+      { title: "Portfolio completo", href: "#", placements: ["bio", "page"] },
+      { title: "Twitter / X", href: "#", placements: ["bio", "page"] },
+      { title: "Instagram", href: "#", placements: ["bio", "page"] },
     ],
   },
 };

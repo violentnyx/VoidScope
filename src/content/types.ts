@@ -19,6 +19,7 @@ export interface RowItem {
   desc?: string;
   meta?: string;
   href?: string;
+  placements?: Array<"bio" | "page">;
 }
 
 export interface RowSection {
@@ -127,6 +128,7 @@ export interface ChannelGroup {
 
 export interface HomeContent {
   identity: HeroIdentity;
+  profileSocialButtonsEnabled: boolean;
   twitchLive: TwitchLiveContent;
   latestVideo: LatestVideoContent;
   nowPlayingWidget: NowPlayingWidgetContent;

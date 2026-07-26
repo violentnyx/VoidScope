@@ -50,6 +50,9 @@ export async function getContent(): Promise<SiteContent> {
     },
     home: {
       ...siteContent.home,
+      profileSocialButtonsEnabled:
+        sections.profileSocialButtons ??
+        siteContent.home.profileSocialButtonsEnabled,
       identity: {
         ...siteContent.home.identity,
         ...overrides.identity,
@@ -65,6 +68,9 @@ export async function getContent(): Promise<SiteContent> {
       latestVideo: {
         ...siteContent.home.latestVideo,
         enabled: sections.latestVideo ?? siteContent.home.latestVideo.enabled,
+        channelIds:
+          integrations.youtubeChannelIds ??
+          siteContent.home.latestVideo.channelIds,
       },
       nowPlayingWidget: {
         ...siteContent.home.nowPlayingWidget,

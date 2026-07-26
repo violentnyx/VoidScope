@@ -1,7 +1,7 @@
 import type { ChannelGroup } from "@/content/types";
 
 export function ChannelGroupBlock({ group }: { group: ChannelGroup }) {
-  if (!group.enabled) return null;
+  if (!group.enabled || group.items.length === 0) return null;
 
   return (
     <section className="mb-8">

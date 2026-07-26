@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getLatestVideoAcrossChannels } from "@/lib/youtube";
+import { getRecentVideosAcrossChannels } from "@/lib/youtube";
 
 export const dynamic = "force-dynamic";
 
@@ -8,14 +8,14 @@ export async function GET(req: NextRequest) {
   const channelIds = channelIdsParam.split(",").map((id) => id.trim()).filter(Boolean);
 
   if (channelIds.length === 0) {
-    return NextResponse.json({ video: null });
+    return NextResponse.json({ video: null, videos: [] });
   }
 
   try {
-    const video = await getLatestVideoAcrossChannels(channelIds);
-    return NextResponse.json({ video });
+    const videos = await getRecentVideosAcrossChannels(channelIds, 3);
+    return NextResponse.json({ video: videos[0] ?? null, videos });
   } catch (err) {
     console.error("[youtube/latest]", err);
-    return NextResponse.json({ video: null });
+    return NextResponse.json({ video: null, videos: [] });
   }
 }

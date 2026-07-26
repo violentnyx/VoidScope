@@ -37,46 +37,67 @@ interface YoutubeFeed {
   };
 }
 
-async function fetchChannelLatestVideo(channelId: string): Promise<YoutubeLatestVideo | null> {
+async function fetchChannelRecentVideos(
+  channelId: string,
+): Promise<YoutubeLatestVideo[]> {
   const res = await fetch(
     `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(channelId)}`,
     { cache: "no-store" },
   );
 
-  if (!res.ok) return null;
+  if (!res.ok) return [];
 
   const xml = await res.text();
   const data = parser.parse(xml) as YoutubeFeed;
   const feed = data.feed;
-  if (!feed) return null;
+  if (!feed) return [];
 
   const channelName = feed.author?.name ?? "";
   const entries = feed.entry;
-  const entry = Array.isArray(entries) ? entries[0] : entries;
-  if (!entry) return null;
+  const list = entries ? (Array.isArray(entries) ? entries : [entries]) : [];
 
-  const videoId = entry["yt:videoId"];
-  const title = entry.title;
-  const url = entry.link?.["@_href"] ?? `https://www.youtube.com/watch?v=${videoId}`;
-  const publishedAt = entry.published;
-  const thumbnailSrc =
-    entry["media:group"]?.["media:thumbnail"]?.["@_url"] ??
-    `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  return list.slice(0, 8).map((entry) => {
+    const videoId = entry["yt:videoId"];
+    const title = entry.title;
+    const url =
+      entry.link?.["@_href"] ??
+      `https://www.youtube.com/watch?v=${videoId}`;
+    const publishedAt = entry.published;
+    const thumbnailSrc =
+      entry["media:group"]?.["media:thumbnail"]?.["@_url"] ??
+      `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
-  return { videoId, title, url, thumbnailSrc, channelName, channelId, publishedAt };
+    return {
+      videoId,
+      title,
+      url,
+      thumbnailSrc,
+      channelName,
+      channelId,
+      publishedAt,
+    };
+  });
 }
 
-/** Busca o feed de cada canal e retorna o video mais recente entre todos eles. */
+/** Busca os feeds e retorna os vídeos mais recentes entre todos os canais. */
+export async function getRecentVideosAcrossChannels(
+  channelIds: string[],
+  limit = 3,
+): Promise<YoutubeLatestVideo[]> {
+  const results = await Promise.all(
+    channelIds.map((id) => fetchChannelRecentVideos(id).catch(() => [])),
+  );
+
+  const valid = results.flat();
+  valid.sort(
+    (a, b) =>
+      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+  );
+  return valid.slice(0, limit);
+}
+
 export async function getLatestVideoAcrossChannels(
   channelIds: string[],
 ): Promise<YoutubeLatestVideo | null> {
-  const results = await Promise.all(
-    channelIds.map((id) => fetchChannelLatestVideo(id).catch(() => null)),
-  );
-
-  const valid = results.filter((r): r is YoutubeLatestVideo => r !== null);
-  if (valid.length === 0) return null;
-
-  valid.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-  return valid[0];
+  return (await getRecentVideosAcrossChannels(channelIds, 1))[0] ?? null;
 }

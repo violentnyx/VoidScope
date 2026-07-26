@@ -57,6 +57,7 @@ export interface ContentOverrides {
   integrations?: {
     twitchChannelLogin?: string;
     lastfmUsername?: string;
+    youtubeChannelIds?: string[];
     ranks?: RanksOverride;
   };
 }

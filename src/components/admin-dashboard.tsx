@@ -50,12 +50,13 @@ const PAGE_ROWS: PageRow[] = [
 
 const SECTION_ROWS: SectionRow[] = [
   { id: "twitchLive", label: "Twitch ao vivo", hint: "Card no hero da Home" },
-  { id: "latestVideo", label: "Último vídeo", hint: "Destaque entre os canais do YouTube" },
+  { id: "profileSocialButtons", label: "Ícones sociais do perfil", hint: "Botões pequenos junto da foto ou bio" },
+  { id: "latestVideo", label: "Vídeos recentes do YouTube", hint: "Módulo alimentado pelos canais conectados" },
   { id: "nowPlayingWidget", label: "Now Playing", hint: "Last.fm — tocando agora / scrobbles" },
   { id: "ranksWidget", label: "Ranks", hint: "Deadlock / Overwatch" },
   { id: "youtube", label: "YouTube (grupo de canais)", hint: "Lista de canais na Home" },
   { id: "tiktok", label: "TikTok (grupo de canais)", hint: "Lista de contas na Home" },
-  { id: "otherSocials", label: "Outras redes", hint: "Twitter / Instagram" },
+  { id: "otherSocials", label: "Botões grandes de redes sociais", hint: "Lista de links no final da Home" },
 ];
 
 type SaveState = "idle" | "saving" | "saved" | "error";

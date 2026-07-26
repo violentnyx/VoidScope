@@ -4,6 +4,7 @@ import { saveSiteSettings, getSiteSettings, type PageStatus } from "@/lib/site-s
 
 const KNOWN_SECTIONS = [
   "twitchLive",
+  "profileSocialButtons",
   "latestVideo",
   "nowPlayingWidget",
   "ranksWidget",
@@ -26,6 +27,7 @@ export async function GET() {
 
   const sections: Record<string, boolean> = {
     twitchLive: content.home.twitchLive.enabled,
+    profileSocialButtons: content.home.profileSocialButtonsEnabled,
     latestVideo: content.home.latestVideo.enabled,
     nowPlayingWidget: content.home.nowPlayingWidget.enabled,
     ranksWidget: content.home.ranksWidget.enabled,

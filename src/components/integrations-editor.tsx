@@ -25,6 +25,7 @@ interface RanksForm {
 interface IntegrationsForm {
   twitchChannelLogin: string;
   lastfmUsername: string;
+  youtubeChannelIds: string[];
   ranks: RanksForm;
 }
 
@@ -33,6 +34,7 @@ type SaveState = "idle" | "saving" | "saved" | "error";
 const EMPTY_FORM: IntegrationsForm = {
   twitchChannelLogin: "",
   lastfmUsername: "",
+  youtubeChannelIds: [],
   ranks: {
     deadlock: {
       steamAccountId: "",
@@ -50,6 +52,7 @@ const EMPTY_FORM: IntegrationsForm = {
 
 export function IntegrationsEditor() {
   const [form, setForm] = useState<IntegrationsForm>(EMPTY_FORM);
+  const [youtubeChannelIdsText, setYoutubeChannelIdsText] = useState("");
   const [loading, setLoading] = useState(true);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [disconnectingSteam, setDisconnectingSteam] = useState(false);
@@ -63,6 +66,7 @@ export function IntegrationsEditor() {
         setForm({
           twitchChannelLogin: integrations.twitchChannelLogin ?? "",
           lastfmUsername: integrations.lastfmUsername ?? "",
+          youtubeChannelIds: integrations.youtubeChannelIds ?? [],
           ranks: {
             deadlock: {
               steamAccountId: integrations.ranks?.deadlock?.steamAccountId ?? "",
@@ -82,6 +86,7 @@ export function IntegrationsEditor() {
             },
           },
         });
+        setYoutubeChannelIdsText((integrations.youtubeChannelIds ?? []).join("\n"));
       })
       .catch(() => setError("Não consegui carregar as integrações atuais."))
       .finally(() => setLoading(false));
@@ -94,7 +99,15 @@ export function IntegrationsEditor() {
       const res = await fetch("/api/admin/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ integrations: form }),
+        body: JSON.stringify({
+          integrations: {
+            ...form,
+            youtubeChannelIds: youtubeChannelIdsText
+              .split(/[\n,]+/)
+              .map((value) => value.trim())
+              .filter(Boolean),
+          },
+        }),
       });
       if (!res.ok) throw new Error();
       setSaveState("saved");
@@ -170,6 +183,40 @@ export function IntegrationsEditor() {
             className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus-visible:border-white/40"
           />
         </Field>
+
+        <div className="border-t border-white/10 pt-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wide text-white/60">
+                YouTube
+              </div>
+              <p className="mt-1 text-[11px] text-white/40">
+                O feed público dispensa chave da API e alimenta o módulo de vídeos recentes.
+              </p>
+            </div>
+            <span
+              className={`border px-2.5 py-1 text-[10px] font-bold uppercase ${
+                youtubeChannelIdsText.trim().length > 0
+                  ? "border-emerald-400/40 text-emerald-300"
+                  : "border-white/15 text-white/35"
+              }`}
+            >
+              {youtubeChannelIdsText.trim().length > 0 ? "Conectado" : "Não conectado"}
+            </span>
+          </div>
+          <Field
+            label="IDs dos canais"
+            hint="Um ID UC... por linha. Depois ative “Vídeos recentes do YouTube” em Seções da Home."
+          >
+            <textarea
+              value={youtubeChannelIdsText}
+              onChange={(event) => setYoutubeChannelIdsText(event.target.value)}
+              rows={3}
+              placeholder={"UCxxxxxxxxxxxxxxxxxxxxxx\nUCyyyyyyyyyyyyyyyyyyyyyy"}
+              className="w-full resize-y rounded-lg border border-white/15 bg-black/40 px-3 py-2 font-mono text-sm text-white outline-none focus-visible:border-white/40"
+            />
+          </Field>
+        </div>
 
         <div className="border-t border-white/10 pt-4">
           <div className="mb-3 text-xs font-bold uppercase tracking-wide text-white/60">

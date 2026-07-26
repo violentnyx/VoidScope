@@ -24,8 +24,16 @@ export default async function HomePage() {
       <section className="grid grid-cols-1 items-center gap-12 sm:grid-cols-2 sm:gap-8">
         <HeroIdentityBlock
           identity={home.identity}
-          socials={home.otherSocials.items}
-          email={contact.email}
+          socials={
+            home.profileSocialButtonsEnabled
+              ? home.otherSocials.items.filter(
+                  (item) => !item.placements || item.placements.includes("bio"),
+                )
+              : []
+          }
+          email={
+            home.profileSocialButtonsEnabled ? contact.email : undefined
+          }
         />
         <TwitchLiveCard content={home.twitchLive} />
       </section>
@@ -40,7 +48,14 @@ export default async function HomePage() {
       <div>
         <ChannelGroupBlock group={home.youtube} />
         <ChannelGroupBlock group={home.tiktok} />
-        <ChannelGroupBlock group={home.otherSocials} />
+        <ChannelGroupBlock
+          group={{
+            ...home.otherSocials,
+            items: home.otherSocials.items.filter(
+              (item) => !item.placements || item.placements.includes("page"),
+            ),
+          }}
+        />
       </div>
     </div>
   );
