@@ -54,7 +54,7 @@ function MatchPortrait({
   lowestTier: boolean;
 }) {
   return (
-    <div className="relative h-[154px] w-[86px] shrink-0 sm:h-[170px] sm:w-[169px]">
+    <div className="relative h-[146px] w-[82px] shrink-0 sm:h-[162px] sm:w-[161px]">
       {heroUrl ? (
         <div
           className="absolute left-[31%] top-[19%] z-20 h-[70%] w-[38%] overflow-hidden"
@@ -206,9 +206,9 @@ export function DeadlockWidgetModal({
             <div className="grid h-[520px] place-items-center text-center text-white/70">{error}</div>
           ) : (
             <div className="mt-5 grid gap-8 lg:mt-0">
-              <section className="lg:absolute lg:bottom-[7%] lg:left-[3%] lg:z-20 lg:w-[47%]">
+              <section className="lg:absolute lg:bottom-[7%] lg:left-[5%] lg:z-20 lg:w-[47%]">
                 <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,169px)] lg:justify-center lg:gap-x-1">
+                <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,161px)] lg:justify-center lg:gap-x-1">
                   {recentMatches.map((match) => (
                     <article key={match.matchId} className="relative min-w-0 text-center">
                       <MatchPortrait
@@ -242,7 +242,7 @@ export function DeadlockWidgetModal({
                       <img
                         src={hero.renderImageUrl}
                         alt={hero.heroName}
-                        className={`pointer-events-none absolute inset-0 h-full w-full object-cover object-center drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
+                        className={`pointer-events-none absolute inset-[7%] h-[86%] w-[86%] object-contain object-center drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
                       />
                     ) : null}
                     <div className="absolute inset-x-0 bottom-[5%] z-20 text-center">
