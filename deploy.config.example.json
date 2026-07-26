@@ -1,0 +1,9 @@
+{
+  "remote": "origin",
+  "branch": "main",
+  "githubOwner": "SEU_USUARIO",
+  "githubRepository": "nyx-site",
+  "sshHost": "ubuntu@SEU_SERVIDOR",
+  "appPath": "/var/www/nyx-site",
+  "serviceName": "nyx-site"
+}

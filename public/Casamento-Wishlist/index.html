@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chá de Panela · Lista de Casamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#3B3939; --bg-deep:#333030;
+    --ink:#F3ECF4; --ink-soft:#C6B7C9;
+    --accent:#B988D1; --accent-deep:#9968B8;
+    --sage:#93CBA8; --accent-line:rgba(185,136,209,0.45);
+    --card:#454141; --line: rgba(243,236,244,0.12);
+    --radius: 22px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:'Inter', sans-serif; min-height:100vh; display:flex; justify-content:center; -webkit-font-smoothing:antialiased; }
+  .app{ width:100%; max-width:560px; min-height:100vh; position:relative;
+    background: radial-gradient(circle at 85% -5%, rgba(185,136,209,0.18), transparent 45%), var(--bg);
+    overflow-x:hidden; }
+
+  .topbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:12px; padding:18px 22px;
+    background:rgba(59,57,57,0.86); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+  .topbar.hidden{display:none;}
+  .back-btn{ display:flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:50%;
+    border:1px solid var(--line); background:var(--card); cursor:pointer; flex:none;
+    transition:transform .15s ease, background .15s ease; }
+  .back-btn:hover{ background:var(--bg-deep); }
+  .back-btn:active{ transform:scale(0.92); }
+  .back-btn svg{ width:16px; height:16px; stroke:var(--accent-deep); }
+  .topbar-title{ font-family:'Fraunces', serif; font-size:19px; font-weight:500; letter-spacing:.2px; }
+
+  .screen{ display:none; padding-bottom:60px; }
+  .screen.active{ display:block; animation:fade .35s ease; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  /* ===== HOME ===== */
+  #home{ padding:0 30px; text-align:center; }
+  .timer-wrap{ margin:22px auto 0; max-width:420px; }
+  .timer-label{ font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--ink-soft); margin-bottom:10px; }
+  .timer-grid{ display:flex; justify-content:center; gap:10px; }
+  .timer-cell{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 4px; width:64px; }
+  .timer-num{ font-family:'Fraunces', serif; font-size:22px; font-weight:600; color:var(--accent); }
+  .timer-unit{ font-size:9.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+
+  .teacup-ring{ width:220px; height:220px; margin:20px auto 0; opacity:.9; }
+  .eyebrow{ font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--accent); font-weight:600; margin-top:4px; }
+  h1.hero{ font-family:'Fraunces', serif; font-weight:600; font-size:44px; line-height:1.08; margin:10px 0 2px; color:var(--ink); }
+  .hero-italic{ font-style:italic; font-weight:500; color:var(--accent); }
+  .hr{ width:64px; height:1px; background:var(--accent-line); margin:22px auto; }
+  .lede{ font-size:16px; line-height:1.65; color:var(--ink-soft); max-width:380px; margin:0 auto 26px; white-space:pre-wrap; }
+  .cta{ display:inline-flex; align-items:center; gap:10px; margin-top:8px; padding:16px 38px;
+    background:var(--accent-deep); color:var(--bg); border:none; border-radius:999px;
+    font-family:'Inter'; font-size:15px; font-weight:600; letter-spacing:.3px; cursor:pointer;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,0.45); transition:transform .18s ease, box-shadow .18s ease; }
+  .cta:hover{ transform:translateY(-2px); }
+  .cta:active{ transform:translateY(0); }
+  .cta svg{ width:16px; height:16px; }
+  .home-foot{ margin-top:56px; font-size:12px; color:var(--ink-soft); letter-spacing:.4px; }
+  .admin-link{ display:inline-block; margin-top:14px; font-size:11px; color:var(--ink-soft); opacity:.55; text-decoration:none; }
+  .admin-link:hover{ opacity:.9; }
+
+  /* ===== LISTA ===== */
+  #lista{ padding:6px 22px 20px; }
+  .cat-nav{ display:flex; gap:8px; overflow-x:auto; padding:14px 0 20px; scrollbar-width:none; }
+  .cat-nav::-webkit-scrollbar{ display:none; }
+  .cat-chip{ flex:none; padding:9px 16px; border-radius:999px; border:1px solid var(--line); background:var(--card);
+    font-size:13px; font-weight:600; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
+  .cat-chip.active{ background:var(--accent-deep); color:var(--bg); border-color:var(--accent-deep); }
+  .cat-block{ margin-bottom:8px; scroll-margin-top:120px; }
+  .cat-title{ font-family:'Fraunces', serif; font-style:italic; font-weight:500; font-size:22px; color:var(--accent); margin:26px 4px 6px; }
+  .cat-count{ font-family:'Inter'; font-style:normal; font-size:12px; color:var(--ink-soft); margin-left:8px; }
+  .item-row{ display:flex; align-items:center; gap:14px; padding:14px 4px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .item-thumb{ flex:none; width:56px; height:56px; border-radius:14px; background:var(--card); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+  .item-thumb svg{ width:24px; height:24px; stroke:var(--accent); }
+  .item-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .item-thumb.reserved::after{ content:""; position:absolute; top:-3px; right:-3px; width:12px; height:12px; border-radius:50%;
+    background:var(--sage); border:2px solid var(--bg); }
+  .item-info{ flex:1; min-width:0; }
+  .item-name{ font-weight:600; font-size:15px; }
+  .item-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .item-reserved-tag{ font-size:11px; color:var(--sage); margin-top:2px; font-weight:600; }
+  .item-tag{ flex:none; font-size:10.5px; font-weight:700; letter-spacing:.4px; color:var(--sage); border:1px solid var(--sage);
+    border-radius:999px; padding:4px 8px; text-transform:uppercase; }
+  .item-tag.none{ opacity:0; }
+  .chev{ flex:none; width:14px; height:14px; stroke:var(--ink-soft); opacity:.6; }
+
+  /* ===== DETALHE ===== */
+  .detail-hero{ height:230px; margin:8px 22px 0; border-radius:24px;
+    background: radial-gradient(circle at 30% 20%, rgba(185,136,209,0.22), transparent 55%), linear-gradient(160deg, var(--bg-deep), var(--bg));
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .detail-hero svg{ width:64px; height:64px; stroke:var(--accent); opacity:.75; }
+  .detail-hero{ position:relative; }
+  .detail-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .detail-body{ padding:26px 26px 10px; }
+  .detail-name{ font-family:'Fraunces', serif; font-size:28px; font-weight:600; color:var(--ink); line-height:1.2; }
+  .detail-cat{ font-size:11.5px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--sage); margin-bottom:8px; display:block; }
+  .detail-price{ font-family:'Fraunces', serif; font-size:16px; color:var(--accent); margin-top:6px; }
+  .detail-desc{ font-size:14.5px; line-height:1.6; color:var(--ink-soft); margin-top:10px; padding-top:16px; border-top:1px solid var(--line); }
+  .detail-desc .label{ display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--accent); margin-bottom:6px; }
+
+  .reserve-box{ margin:20px 26px; padding:18px; border-radius:18px; background:var(--card); border:1px solid var(--line); }
+  .reserve-box.taken{ border-color:var(--sage); }
+  .reserve-title{ font-weight:700; font-size:14px; margin-bottom:4px; }
+  .reserve-sub{ font-size:12.5px; color:var(--ink-soft); margin-bottom:12px; }
+  .reserve-form{ display:flex; gap:8px; }
+  .reserve-form input{ flex:1; padding:11px 14px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); font-family:'Inter'; font-size:13.5px; }
+  .reserve-form input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .reserve-form button{ padding:11px 16px; border-radius:10px; border:none; background:var(--accent-deep); color:var(--bg);
+    font-weight:700; font-size:13px; cursor:pointer; white-space:nowrap; }
+  .reserve-form button:disabled{ opacity:.5; cursor:default; }
+  .reserve-msg{ font-size:12.5px; margin-top:8px; color:var(--sage); }
+  .reserve-msg.error{ color:#E8A0A0; }
+  .taken-name{ color:var(--sage); font-weight:700; }
+  .cancel-link{ background:none; border:none; color:var(--ink-soft); font-size:11.5px; text-decoration:underline; cursor:pointer; padding:0; margin-top:10px; }
+
+  .stores-title{ font-family:'Fraunces', serif; font-style:italic; font-size:17px; color:var(--accent); margin:26px 26px 12px; }
+  .store-list{ padding:0 22px 30px; display:flex; flex-direction:column; gap:10px; }
+  .store-card{ display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:12px 14px; text-decoration:none; color:var(--ink);
+    transition:border-color .15s ease, transform .15s ease; }
+  .store-card:hover{ border-color:var(--accent-line); transform:translateY(-1px); }
+  .store-logo{ flex:none; width:38px; height:38px; border-radius:50%; background:var(--accent-deep); color:var(--bg);
+    display:flex; align-items:center; justify-content:center; font-family:'Fraunces', serif; font-weight:600; font-size:15px;
+    position:relative; overflow:hidden; }
+  .store-logo img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#fff; }
+  .store-info{ flex:1; min-width:0; }
+  .store-name{ font-weight:600; font-size:14px; }
+  .store-model{ font-size:12px; color:var(--ink-soft); margin-top:1px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .store-go{ flex:none; font-size:11.5px; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:4px; }
+  .store-go svg{ width:13px; height:13px; stroke:var(--accent); }
+  .no-links{ margin:0 26px 30px; padding:18px; border-radius:16px; background:var(--card); border:1px dashed var(--line);
+    font-size:13.5px; color:var(--ink-soft); text-align:center; }
+  .ref-link{ display:flex; align-items:center; gap:8px; margin:-2px 0 4px 4px; font-size:12.5px; color:var(--ink-soft);
+    text-decoration:underline; text-underline-offset:2px; }
+  .ref-link svg{ width:13px; height:13px; stroke:var(--ink-soft); flex:none; }
+  .ref-link:hover{ color:var(--accent); }
+  .ref-link:hover svg{ stroke:var(--accent); }
+
+  .loading{ padding:80px 20px; text-align:center; color:var(--ink-soft); font-size:14px; }
+
+  @media (max-width:380px){ h1.hero{ font-size:36px; } .detail-name{ font-size:24px; } .timer-cell{ width:56px; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <div class="topbar hidden" id="topbar">
+    <div class="back-btn" id="backBtn" onclick="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="topbar-title" id="topbarTitle">Lista</div>
+  </div>
+
+  <section class="screen active" id="home">
+    <div class="timer-wrap" id="timerWrap" style="display:none;">
+      <div class="timer-label" id="timerLabel"></div>
+      <div class="timer-grid" id="timerGrid"></div>
+    </div>
+    <svg class="teacup-ring" viewBox="0 0 220 220" fill="none">
+      <ellipse cx="110" cy="150" rx="70" ry="10" stroke="#B988D1" stroke-width="1" opacity="0.35"/>
+      <ellipse cx="110" cy="128" rx="86" ry="12" stroke="#B988D1" stroke-width="1" opacity="0.25"/>
+      <path d="M55 60 C55 40 90 30 110 30 C130 30 165 40 165 60 C165 95 140 120 110 120 C80 120 55 95 55 60 Z" stroke="#E4D6EA" stroke-width="1.4"/>
+      <path d="M162 65 C182 65 190 78 190 90 C190 102 180 112 162 110" stroke="#E4D6EA" stroke-width="1.4"/>
+    </svg>
+    <div class="eyebrow" id="cfgEyebrow">Chá de Panela</div>
+    <h1 class="hero" id="cfgHero"></h1>
+    <div class="hr"></div>
+    <p class="lede" id="cfgLede"></p>
+    <button class="cta" onclick="showList()">
+      Ver a lista
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="home-foot" id="cfgFooter"></div>
+  <a class="admin-link" href="/Casamento-Wishlist/admin">painel administrativo</a>
+  </section>
+
+  <section class="screen" id="lista">
+    <div class="cat-nav" id="catNav"></div>
+    <div id="catBlocks"><div class="loading">carregando lista...</div></div>
+  </section>
+
+  <section class="screen" id="detalhe">
+    <div class="detail-hero"><svg id="detailIcon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></svg></div>
+    <div class="detail-body">
+      <span class="detail-cat" id="detailCat"></span>
+      <div class="detail-name" id="detailName"></div>
+      <div class="detail-price" id="detailPrice" style="display:none;"></div>
+      <div class="detail-desc" id="detailDesc"></div>
+    </div>
+    <div id="reserveBox"></div>
+    <div class="stores-title" id="storesTitle" style="display:none;">Onde encontrar</div>
+    <div class="store-list" id="storeList"></div>
+    <div class="no-links" id="noLinks" style="display:none;">Ainda não escolhemos um link específico para este item — fique à vontade para escolher o modelo que preferir. 🤍</div>
+  </section>
+
+</div>
+
+<script>
+const ICONS = {
+  'Banheiro': 'M12 3c-1 3-4 5-4 9a4 4 0 0 0 8 0c0-4-3-6-4-9zM6 20h12',
+  'Cozinha': 'M8 3v6M12 3v6M8 9a4 4 0 0 0 8 0M12 13v8M8 21h8',
+  'Quarto & Decoração': 'M4 20V9l8-5 8 5v11M9 20v-6h6v6M4 9h16'
+};
+function iconFor(cat){ return ICONS[cat] || ICONS['Quarto & Decoração']; }
+function faviconUrl(storeUrl){
+  try{
+    const host = new URL(storeUrl).hostname.replace(/^www\./,'');
+    return `https://www.google.com/s2/favicons?sz=64&domain=${host}`;
+  }catch(e){ return null; }
+}
+
+let CONFIG = null;
+let ITEMS = [];
+let historyStack = ["home"];
+let timerHandle = null;
+
+async function loadData(){
+    const [cfgRes, itemsRes] = await Promise.all([fetch('/api/wedding/config'), fetch('/api/wedding/items')]);
+  CONFIG = await cfgRes.json();
+  ITEMS = await itemsRes.json();
+  renderHome();
+  renderList();
+  startTimer();
+}
+
+function renderHome(){
+  document.getElementById('cfgEyebrow').textContent = CONFIG.eyebrow || '';
+  document.getElementById('cfgHero').innerHTML = `${escapeHtml(CONFIG.heroLine1||'')}<br><span class="hero-italic">${escapeHtml(CONFIG.heroItalic||'')}</span><br>${escapeHtml(CONFIG.heroLine3||'')}`;
+  document.getElementById('cfgLede').textContent = CONFIG.lede || '';
+  document.getElementById('cfgFooter').textContent = CONFIG.footer || '';
+}
+
+function startTimer(){
+  const wrap = document.getElementById('timerWrap');
+  if(!CONFIG.eventDate){ wrap.style.display='none'; return; }
+  const target = new Date(CONFIG.eventDate).getTime();
+  if(isNaN(target)){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  if(timerHandle) clearInterval(timerHandle);
+  tick();
+  timerHandle = setInterval(tick, 1000);
+
+  function tick(){
+    const now = Date.now();
+    const diff = now - target; // positivo = já passou (contagem "há X tempo"), negativo = falta (contagem regressiva)
+    const future = diff < 0;
+    const abs = Math.abs(diff);
+    const days = Math.floor(abs/86400000);
+    const hours = Math.floor((abs%86400000)/3600000);
+    const mins = Math.floor((abs%3600000)/60000);
+    const secs = Math.floor((abs%60000)/1000);
+
+    document.getElementById('timerLabel').textContent = future
+      ? ''
+      : `${escapeHtml(CONFIG.eventLabel || 'casados')} há`;
+
+    const cells = [
+      [days, 'dias'], [hours, 'horas'], [mins, 'min'], [secs, 'seg']
+    ];
+    document.getElementById('timerGrid').innerHTML = cells.map(([n,label]) =>
+      `<div class="timer-cell"><div class="timer-num">${String(n).padStart(2,'0')}</div><div class="timer-unit">${label}</div></div>`
+    ).join('');
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showScreen(id, title){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  const topbar = document.getElementById("topbar");
+  if(id === "home"){ topbar.classList.add("hidden"); }
+  else { topbar.classList.remove("hidden"); document.getElementById("topbarTitle").textContent = title || ""; }
+  window.scrollTo({top:0, behavior:"instant"});
+}
+function goBack(){
+  if(historyStack.length > 1){
+    historyStack.pop();
+    const prev = historyStack[historyStack.length-1];
+    if(prev === "home") showScreen("home");
+    else if(prev === "lista") showScreen("lista", "Lista de presentes");
+  }
+}
+function showList(){ historyStack.push("lista"); showScreen("lista", "Lista de presentes"); }
+
+function groupByCategory(){
+  const order = [];
+  const map = {};
+  ITEMS.forEach(it=>{
+    if(!map[it.categoria]){ map[it.categoria]=[]; order.push(it.categoria); }
+    map[it.categoria].push(it);
+  });
+  return order.map(cat => ({cat, items: map[cat]}));
+}
+
+let ACTIVE_CATEGORY = null;
+
+function renderList(){
+  const groups = groupByCategory();
+  if(ACTIVE_CATEGORY === null || !groups.some(g=>g.cat===ACTIVE_CATEGORY)){
+    ACTIVE_CATEGORY = groups.length ? groups[0].cat : null;
+  }
+  const nav = document.getElementById("catNav");
+  const blocks = document.getElementById("catBlocks");
+  nav.innerHTML = ""; blocks.innerHTML = "";
+
+  groups.forEach((g)=>{
+    const chip = document.createElement("div");
+    chip.className = "cat-chip" + (g.cat===ACTIVE_CATEGORY ? " active":"");
+    chip.textContent = g.cat;
+    chip.onclick = ()=>{
+      if(ACTIVE_CATEGORY === g.cat) return;
+      ACTIVE_CATEGORY = g.cat;
+      renderList();
+      document.getElementById("lista").scrollTo({top:0, behavior:"instant"});
+    };
+    nav.appendChild(chip);
+
+    if(g.cat !== ACTIVE_CATEGORY) return; // só a aba ativa é desenhada
+
+    const block = document.createElement("div");
+    block.className = "cat-block";
+
+    const title = document.createElement("div");
+    title.className = "cat-title";
+    title.innerHTML = '<span class="cat-count">'+g.items.length+' itens nesta categoria</span>';
+    block.appendChild(title);
+
+    g.items.forEach(item=>{
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.onclick = ()=>openItem(item.id);
+      const path = iconFor(g.cat);
+      const thumbInner = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="${path}"/></svg>`
+        + (item.imagemUrl ? `<img src="${escapeHtml(item.imagemUrl)}" alt="" onerror="this.style.display='none'">` : '');
+      row.innerHTML = `
+        <div class="item-thumb ${item.reservadoPor ? 'reserved':''}">${thumbInner}</div>
+        <div class="item-info">
+          <div class="item-name">${escapeHtml(item.nome)}</div>
+          ${item.reservadoPor
+            ? `<div class="item-reserved-tag">reservado por ${escapeHtml(item.reservadoPor)}</div>`
+            : `<div class="item-desc">${escapeHtml(item.descricao || "Qualquer modelo é bem-vindo")}</div>`}
+        </div>
+        <div class="item-tag ${item.links.length ? '' : 'none'}">${item.links.length} ${item.links.length===1?'link':'links'}</div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>`;
+      block.appendChild(row);
+    });
+    blocks.appendChild(block);
+  });
+}
+
+function openItem(id){
+  const item = ITEMS.find(i=>i.id===id);
+  if(!item) return;
+
+  document.getElementById("detailCat").textContent = item.categoria;
+  document.getElementById("detailName").textContent = item.nome;
+
+  const priceEl = document.getElementById("detailPrice");
+  if(item.precoEstimado){ priceEl.style.display='block'; priceEl.textContent = 'Preço estimado: ' + item.precoEstimado; }
+  else priceEl.style.display='none';
+
+  const descEl = document.getElementById("detailDesc");
+  descEl.innerHTML = '<span class="label">Preferências</span>' + escapeHtml(item.descricao || "Sem restrições — qualquer modelo é bem-vindo.");
+
+  document.getElementById("detailIcon").innerHTML = '<path d="'+iconFor(item.categoria)+'"/>';
+  const heroEl = document.querySelector('.detail-hero');
+  const existingImg = heroEl.querySelector('img');
+  if(existingImg) existingImg.remove();
+  if(item.imagemUrl){
+    const img = document.createElement('img');
+    img.src = item.imagemUrl; img.alt = '';
+    img.onerror = () => img.remove();
+    heroEl.appendChild(img);
+  }
+
+  renderReserveBox(item);
+
+  const storeList = document.getElementById("storeList");
+  const storesTitle = document.getElementById("storesTitle");
+  const noLinks = document.getElementById("noLinks");
+  storeList.innerHTML = "";
+  if(item.links.length){
+    storesTitle.style.display = "block"; noLinks.style.display = "none";
+    item.links.forEach(l=>{
+      const a = document.createElement("a");
+      a.href = l.url; a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.className = "store-card";
+      const favicon = faviconUrl(l.url);
+      a.innerHTML = `
+        <div class="store-logo">${escapeHtml(l.loja.charAt(0))}${favicon ? `<img src="${favicon}" alt="" onerror="this.style.display='none'">` : ''}</div>
+        <div class="store-info"><div class="store-name">${escapeHtml(l.loja)}</div><div class="store-model">${escapeHtml(l.modelo)}</div></div>
+        <div class="store-go">Ver<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M7 7h10v10"/></svg></div>`;
+      storeList.appendChild(a);
+      if(l.refUrl){
+        const ref = document.createElement("a");
+        ref.href = l.refUrl; ref.target = "_blank"; ref.rel = "noopener noreferrer";
+        ref.className = "ref-link";
+        ref.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>${escapeHtml(l.refLabel || 'Ver referência')}`;
+        storeList.appendChild(ref);
+      }
+    });
+  } else { storesTitle.style.display = "none"; noLinks.style.display = "block"; }
+
+  historyStack.push("detalhe");
+  showScreen("detalhe", item.nome);
+}
+
+function renderReserveBox(item){
+  const box = document.getElementById("reserveBox");
+  if(item.reservadoPor){
+    box.innerHTML = `
+      <div class="reserve-box taken">
+        <div class="reserve-title">Presente reservado 🤍</div>
+        <div class="reserve-sub">Reservado por <span class="taken-name">${escapeHtml(item.reservadoPor)}</span></div>
+        <button class="cancel-link" onclick="showCancelForm('${item.id}')">não fui eu / quero cancelar</button>
+        <div id="cancelArea"></div>
+      </div>`;
+  } else {
+    box.innerHTML = `
+      <div class="reserve-box">
+        <div class="reserve-title">Quer presentear com este item?</div>
+        <div class="reserve-sub">Reserve para que outras pessoas saibam que já foi escolhido.</div>
+        <div class="reserve-form">
+          <input type="text" id="reserveName" placeholder="Seu nome" maxlength="60">
+          <button onclick="doReserve('${item.id}')">Reservar</button>
+        </div>
+        <div class="reserve-msg" id="reserveMsg"></div>
+      </div>`;
+  }
+}
+
+function showCancelForm(id){
+  document.getElementById("cancelArea").innerHTML = `
+    <div class="reserve-form" style="margin-top:10px;">
+      <input type="text" id="cancelName" placeholder="Digite o nome usado na reserva">
+      <button onclick="doUnreserve('${id}')">Cancelar</button>
+    </div>
+    <div class="reserve-msg" id="cancelMsg"></div>`;
+}
+
+async function doReserve(id){
+  const input = document.getElementById("reserveName");
+  const msg = document.getElementById("reserveMsg");
+  const nome = input.value.trim();
+  if(!nome){ msg.textContent = "Digite seu nome."; msg.className = "reserve-msg error"; return; }
+  const res = await fetch(`/api/wedding/items/${id}/reserve`, {
+    method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({nome})
+  });
+  const data = await res.json();
+  if(!res.ok){ msg.textContent = data.error || "Não foi possível reservar."; msg.className = "reserve-msg error"; return; }
+  const item = ITEMS.find(i=>i.id===id);
+  Object.assign(item, data);
+  renderReserveBox(item);
+  renderList();
+}
+
+async function doUnreserve(id){
+  const input = document.getElementById("cancelName");
+  const msg = document.getElementById("cancelMsg");
+  const nome = input.value.trim();
+  const res = await fetch(`/api/wedding/items/${id}/unreserve`, {
+    method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({nome})
+  });
+  const data = await res.json();
+  if(!res.ok){ msg.textContent = data.error || "Não foi possível cancelar."; msg.className = "reserve-msg error"; return; }
+  const item = ITEMS.find(i=>i.id===id);
+  Object.assign(item, data);
+  renderReserveBox(item);
+  renderList();
+}
+
+loadData();
+</script>
+</body>
+</html>

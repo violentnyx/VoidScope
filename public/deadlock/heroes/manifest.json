@@ -1,0 +1,217 @@
+{
+  "Abrams": {
+    "bytes": 2672294,
+    "file": "abrams.png",
+    "source_url": "https://deadlock.wiki/images/c/cc/Abrams_Render.png"
+  },
+  "Apollo": {
+    "bytes": 2619841,
+    "file": "apollo.png",
+    "source_url": "https://deadlock.wiki/images/0/04/Apollo_Render.png"
+  },
+  "Bebop": {
+    "bytes": 2407734,
+    "file": "bebop.png",
+    "source_url": "https://deadlock.wiki/images/1/13/Bebop_Render.png"
+  },
+  "Billy": {
+    "bytes": 2559610,
+    "file": "billy.png",
+    "source_url": "https://deadlock.wiki/images/7/74/Billy_Render.png"
+  },
+  "Calico": {
+    "bytes": 1964912,
+    "file": "calico.png",
+    "source_url": "https://deadlock.wiki/images/3/35/Calico_Render.png"
+  },
+  "Celeste": {
+    "bytes": 2412135,
+    "file": "celeste.png",
+    "source_url": "https://deadlock.wiki/images/f/fc/Celeste_Render.png"
+  },
+  "Drifter": {
+    "bytes": 2114303,
+    "file": "drifter.png",
+    "source_url": "https://deadlock.wiki/images/5/56/Drifter_Render.png"
+  },
+  "Dynamo": {
+    "bytes": 2943225,
+    "file": "dynamo.png",
+    "source_url": "https://deadlock.wiki/images/d/d7/Dynamo_Render.png"
+  },
+  "Fathom": {
+    "bytes": 439479,
+    "file": "fathom.png",
+    "source_url": "https://deadlock.wiki/images/3/36/Fathom_Render.png"
+  },
+  "Graves": {
+    "bytes": 2303472,
+    "file": "graves.png",
+    "source_url": "https://deadlock.wiki/images/e/e8/Graves_Render.png"
+  },
+  "Grey Talon": {
+    "bytes": 2634731,
+    "file": "grey_talon.png",
+    "source_url": "https://deadlock.wiki/images/6/6e/Grey_Talon_Render.png"
+  },
+  "Haze": {
+    "bytes": 1643492,
+    "file": "haze.png",
+    "source_url": "https://deadlock.wiki/images/b/b8/Haze_Render.png"
+  },
+  "Holliday": {
+    "bytes": 1476518,
+    "file": "holliday.png",
+    "source_url": "https://deadlock.wiki/images/f/fb/Holliday_Render.png"
+  },
+  "Infernus": {
+    "bytes": 2068953,
+    "file": "infernus.png",
+    "source_url": "https://deadlock.wiki/images/e/e6/Infernus_Render.png"
+  },
+  "Ivy": {
+    "bytes": 2237347,
+    "file": "ivy.png",
+    "source_url": "https://deadlock.wiki/images/6/65/Ivy_Render.png"
+  },
+  "Kelvin": {
+    "bytes": 2983216,
+    "file": "kelvin.png",
+    "source_url": "https://deadlock.wiki/images/1/14/Kelvin_Render.png"
+  },
+  "Lady Geist": {
+    "bytes": 2508560,
+    "file": "lady_geist.png",
+    "source_url": "https://deadlock.wiki/images/2/2c/Lady_Geist_Render.png"
+  },
+  "Lash": {
+    "bytes": 2802874,
+    "file": "lash.png",
+    "source_url": "https://deadlock.wiki/images/9/9d/Lash_Render.png"
+  },
+  "McGinnis": {
+    "bytes": 2939997,
+    "file": "mcginnis.png",
+    "source_url": "https://deadlock.wiki/images/7/78/McGinnis_Render.png"
+  },
+  "Mina": {
+    "bytes": 2580096,
+    "file": "mina.png",
+    "source_url": "https://deadlock.wiki/images/6/61/Mina_Render.png"
+  },
+  "Mirage": {
+    "bytes": 1875803,
+    "file": "mirage.png",
+    "source_url": "https://deadlock.wiki/images/5/51/Mirage_Render.png"
+  },
+  "Mo & Krill": {
+    "bytes": 2654078,
+    "file": "mo_and_krill.png",
+    "source_url": "https://deadlock.wiki/images/a/a4/Mo_%26_Krill_Render.png"
+  },
+  "Paige": {
+    "bytes": 2852662,
+    "file": "paige.png",
+    "source_url": "https://deadlock.wiki/images/4/49/Paige_Render.png"
+  },
+  "Paradox": {
+    "bytes": 2395157,
+    "file": "paradox.png",
+    "source_url": "https://deadlock.wiki/images/8/8a/Paradox_Render.png"
+  },
+  "Pocket": {
+    "bytes": 2617891,
+    "file": "pocket.png",
+    "source_url": "https://deadlock.wiki/images/c/c9/Pocket_Render.png"
+  },
+  "Raven": {
+    "bytes": 433139,
+    "file": "raven.png",
+    "source_url": "https://deadlock.wiki/images/b/bb/Raven_Render.png"
+  },
+  "Rem": {
+    "bytes": 2425497,
+    "file": "rem.png",
+    "source_url": "https://deadlock.wiki/images/a/a4/Rem_Render.png"
+  },
+  "Seven": {
+    "bytes": 2359804,
+    "file": "seven.png",
+    "source_url": "https://deadlock.wiki/images/3/31/Seven_Render.png"
+  },
+  "Shiv": {
+    "bytes": 2067693,
+    "file": "shiv.png",
+    "source_url": "https://deadlock.wiki/images/0/01/Shiv_Render.png"
+  },
+  "Silver": {
+    "bytes": 2233101,
+    "file": "silver.png",
+    "source_url": "https://deadlock.wiki/images/6/64/Silver_Render.png"
+  },
+  "Sinclair": {
+    "bytes": 1104424,
+    "file": "sinclair.png",
+    "source_url": "https://deadlock.wiki/images/d/d6/Sinclair_Render.png"
+  },
+  "The Doorman": {
+    "bytes": 2031077,
+    "file": "the_doorman.png",
+    "source_url": "https://deadlock.wiki/images/7/7f/The_Doorman_Render.png"
+  },
+  "Trapper": {
+    "bytes": 305829,
+    "file": "trapper.png",
+    "source_url": "https://deadlock.wiki/images/3/3c/Trapper_Render.png"
+  },
+  "Vandal": {
+    "bytes": 479760,
+    "file": "vandal.png",
+    "source_url": "https://deadlock.wiki/images/f/f2/Vandal_Render.png"
+  },
+  "Venator": {
+    "bytes": 2174237,
+    "file": "venator.png",
+    "source_url": "https://deadlock.wiki/images/1/15/Venator_Render.png"
+  },
+  "Victor": {
+    "bytes": 2360760,
+    "file": "victor.png",
+    "source_url": "https://deadlock.wiki/images/c/cb/Victor_Render.png"
+  },
+  "Vindicta": {
+    "bytes": 2461060,
+    "file": "vindicta.png",
+    "source_url": "https://deadlock.wiki/images/c/c1/Vindicta_Render.png"
+  },
+  "Viscous": {
+    "bytes": 2460129,
+    "file": "viscous.png",
+    "source_url": "https://deadlock.wiki/images/c/c2/Viscous_Render.png"
+  },
+  "Vyper": {
+    "bytes": 2435183,
+    "file": "vyper.png",
+    "source_url": "https://deadlock.wiki/images/0/01/Vyper_Render.png"
+  },
+  "Warden": {
+    "bytes": 1973847,
+    "file": "warden.png",
+    "source_url": "https://deadlock.wiki/images/9/94/Warden_Render.png"
+  },
+  "Wraith": {
+    "bytes": 2400370,
+    "file": "wraith.png",
+    "source_url": "https://deadlock.wiki/images/9/97/Wraith_Render.png"
+  },
+  "Wrecker": {
+    "bytes": 248592,
+    "file": "wrecker.png",
+    "source_url": "https://deadlock.wiki/images/c/cf/Wrecker_Render.png"
+  },
+  "Yamato": {
+    "bytes": 1955105,
+    "file": "yamato.png",
+    "source_url": "https://deadlock.wiki/images/0/0a/Yamato_Render.png"
+  }
+}

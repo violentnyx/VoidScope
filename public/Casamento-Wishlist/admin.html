@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Chá de Panela</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#3B3939; --bg-deep:#302D2D; --ink:#F3ECF4; --ink-soft:#C6B7C9;
+    --accent:#B988D1; --accent-deep:#9968B8; --sage:#93CBA8;
+    --card:#454141; --line: rgba(243,236,244,0.14); --danger:#E8A0A0;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',sans-serif; }
+  .wrap{ max-width:760px; margin:0 auto; padding:34px 22px 80px; }
+  h1{ font-family:'Fraunces',serif; font-weight:600; font-size:28px; margin:0 0 4px; }
+  .sub{ color:var(--ink-soft); font-size:13.5px; margin-bottom:28px; }
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; margin-bottom:20px; }
+  .card h2{ font-family:'Fraunces',serif; font-weight:600; font-size:18px; margin:0 0 14px; color:var(--accent); }
+  label{ display:block; font-size:12px; color:var(--ink-soft); margin:12px 0 5px; font-weight:600; }
+  input, textarea, select{ width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); font-family:'Inter'; font-size:13.5px; }
+  textarea{ resize:vertical; min-height:70px; }
+  input:focus, textarea:focus, select:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  button{ cursor:pointer; font-family:'Inter'; font-weight:700; border:none; border-radius:10px; padding:11px 18px; font-size:13.5px; }
+  .btn-primary{ background:var(--accent-deep); color:var(--bg); }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--ink); }
+  .btn-danger{ background:transparent; border:1px solid var(--danger); color:var(--danger); }
+  .btn-sm{ padding:7px 12px; font-size:12px; }
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .row > *{ flex:1; }
+  .msg{ font-size:12.5px; margin-top:10px; }
+  .msg.error{ color:var(--danger); } .msg.ok{ color:var(--sage); }
+
+  #loginScreen{ max-width:360px; margin:80px auto; text-align:center; }
+  #loginScreen h1{ font-size:24px; }
+
+  .item-card{ border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:10px; background:var(--bg-deep); }
+  .item-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .item-head .meta{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.4px; }
+  .item-head .nome{ font-weight:700; font-size:15px; margin-top:2px; }
+  .item-actions{ display:flex; gap:6px; flex:none; }
+  .reserved-badge{ display:inline-block; margin-top:6px; font-size:11.5px; color:var(--sage); font-weight:600; }
+  .edit-form{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); display:none; }
+  .edit-form.open{ display:block; }
+  .link-row{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+  .link-row input{ font-size:12.5px; padding:8px 10px; }
+  .link-row button{ flex:none; }
+  .cat-select-wrap{ display:flex; gap:8px; }
+  .hidden{ display:none !important; }
+  .topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+  .filter-bar{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .filter-chip{ padding:7px 13px; border-radius:999px; border:1px solid var(--line); font-size:12.5px; cursor:pointer; color:var(--ink-soft); }
+  .filter-chip.active{ background:var(--accent-deep); color:var(--bg); border-color:var(--accent-deep); }
+  a.view-site{ color:var(--ink-soft); font-size:12.5px; text-decoration:none; }
+  a.view-site:hover{ color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h1>Painel admin</h1>
+  <p class="sub" id="loginSub">Entre com a senha para gerenciar a lista.</p>
+  <div class="card">
+    <div id="setupFields" class="hidden">
+      <label>Criar senha de admin (mín. 6 caracteres)</label>
+      <input type="password" id="setupPass" placeholder="Nova senha">
+      <button class="btn-primary" style="width:100%; margin-top:12px;" onclick="doSetup()">Criar senha e entrar</button>
+    </div>
+    <div id="loginFields">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="Senha de admin">
+      <button class="btn-primary" style="width:100%; margin-top:12px;" onclick="doLogin()">Entrar</button>
+    </div>
+    <div class="msg error" id="loginMsg"></div>
+  </div>
+</div>
+
+<div class="wrap hidden" id="dashboard">
+  <div class="topbar">
+    <div>
+      <h1>Painel admin</h1>
+      <p class="sub">Chá de Panela · Lista de Casamento</p>
+    </div>
+    <div style="text-align:right;">
+      <a class="view-site" href="/Casamento-Wishlist" target="_blank">ver o site →</a><br>
+      <button class="btn-ghost btn-sm" style="margin-top:8px;" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- TEXTOS DA HOME -->
+  <div class="card">
+    <h2>Textos da página inicial</h2>
+    <label>Categoria / etiqueta (eyebrow)</label>
+    <input id="cfg_eyebrow">
+    <div class="row">
+      <div><label>Primeira linha do título</label><input id="cfg_heroLine1"></div>
+      <div><label>Trecho em itálico</label><input id="cfg_heroItalic"></div>
+      <div><label>Última linha do título</label><input id="cfg_heroLine3"></div>
+    </div>
+    <label>Texto de apresentação</label>
+    <textarea id="cfg_lede"></textarea>
+    <label>Rodapé</label>
+    <input id="cfg_footer">
+    <div class="row">
+      <div><label>Data do evento (usada no timer)</label><input type="datetime-local" id="cfg_eventDate"></div>
+      <div><label>Palavra do timer (ex: "casados", "juntos")</label><input id="cfg_eventLabel"></div>
+    </div>
+    <p class="sub" style="margin-top:8px;">Se a data estiver no futuro, o site mostra contagem regressiva. Se já passou, mostra "casados há X dias" automaticamente.</p>
+    <button class="btn-primary" onclick="saveConfig()">Salvar textos</button>
+    <div class="msg" id="cfgMsg"></div>
+  </div>
+
+  <!-- SEGURANÇA -->
+  <div class="card">
+    <h2>Segurança</h2>
+    <label>Senha atual</label>
+    <input type="password" id="pw_atual">
+    <label>Nova senha</label>
+    <input type="password" id="pw_nova">
+    <button class="btn-ghost" style="margin-top:10px;" onclick="changePassword()">Trocar senha</button>
+    <div class="msg" id="pwMsg"></div>
+  </div>
+
+  <!-- CATEGORIAS / ABAS -->
+  <div class="card">
+    <h2>Categorias / abas</h2>
+    <p class="sub" style="margin-top:-6px;">Cada categoria vira uma aba no site. Uma aba só é excluída se não tiver nenhum item nela.</p>
+    <div class="filter-bar" id="catManageBar"></div>
+    <div class="row" style="margin-top:6px;">
+      <input id="newCatName" placeholder="Nome da nova aba (ex: Sala, Escritório...)">
+      <button class="btn-primary btn-sm" style="flex:none;" onclick="addCategory()">+ Adicionar aba</button>
+    </div>
+    <div class="msg" id="catMsg"></div>
+  </div>
+
+  <!-- ITENS -->
+  <div class="card">
+    <h2>Itens da lista</h2>
+    <div class="filter-bar" id="filterBar"></div>
+    <button class="btn-primary btn-sm" onclick="openNewItemForm()">+ Novo item</button>
+    <div id="newItemArea"></div>
+    <div id="itemsList" style="margin-top:16px;"></div>
+  </div>
+
+</div>
+
+<script>
+let TOKEN = localStorage.getItem('cdp_admin_token') || null;
+let ITEMS = [];
+let ACTIVE_FILTER = null;
+let CATEGORIES = [];
+
+async function api(path, opts={}){
+  opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+  if(TOKEN) opts.headers['Authorization'] = 'Bearer ' + TOKEN;
+  const res = await fetch('/api/wedding'+path, opts);
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || 'Erro na requisição');
+  return data;
+}
+
+async function init(){
+  const status = await fetch('/api/wedding/setup-status').then(r=>r.json());
+  if(status.needsSetup){
+    document.getElementById('setupFields').classList.remove('hidden');
+    document.getElementById('loginFields').classList.add('hidden');
+    document.getElementById('loginSub').textContent = 'Primeiro acesso — crie a senha de administrador.';
+  }
+  if(TOKEN){
+    try{ await api('/config'); showDashboard(); }
+    catch(e){ TOKEN=null; localStorage.removeItem('cdp_admin_token'); }
+  }
+}
+
+async function doSetup(){
+  const senha = document.getElementById('setupPass').value;
+  const msg = document.getElementById('loginMsg');
+  try{
+    await api('/setup', {method:'POST', body:JSON.stringify({senha})});
+    const data = await api('/login', {method:'POST', body:JSON.stringify({senha})});
+    TOKEN = data.token; localStorage.setItem('cdp_admin_token', TOKEN);
+    showDashboard();
+  }catch(e){ msg.textContent = e.message; }
+}
+
+async function doLogin(){
+  const senha = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMsg');
+  try{
+    const data = await api('/login', {method:'POST', body:JSON.stringify({senha})});
+    TOKEN = data.token; localStorage.setItem('cdp_admin_token', TOKEN);
+    showDashboard();
+  }catch(e){ msg.textContent = e.message; }
+}
+
+function logout(){
+  api('/logout', {method:'POST'}).catch(()=>{});
+  TOKEN = null; localStorage.removeItem('cdp_admin_token');
+  location.reload();
+}
+
+async function showDashboard(){
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  await loadConfig();
+  await loadItems();
+  renderCatManageBar();
+  renderFilterBar();
+  renderItems();
+}
+
+async function loadConfig(){
+  const cfg = await api('/config');
+  CATEGORIES = cfg.categorias && cfg.categorias.length ? cfg.categorias.slice() : ['Banheiro','Cozinha','Quarto & Decoração'];
+  document.getElementById('cfg_eyebrow').value = cfg.eyebrow || '';
+  document.getElementById('cfg_heroLine1').value = cfg.heroLine1 || '';
+  document.getElementById('cfg_heroItalic').value = cfg.heroItalic || '';
+  document.getElementById('cfg_heroLine3').value = cfg.heroLine3 || '';
+  document.getElementById('cfg_lede').value = cfg.lede || '';
+  document.getElementById('cfg_footer').value = cfg.footer || '';
+  document.getElementById('cfg_eventLabel').value = cfg.eventLabel || '';
+  if(cfg.eventDate){
+    const d = new Date(cfg.eventDate);
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('cfg_eventDate').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+}
+
+async function saveConfig(){
+  const msg = document.getElementById('cfgMsg');
+  const dtVal = document.getElementById('cfg_eventDate').value;
+  const body = {
+    eyebrow: document.getElementById('cfg_eyebrow').value,
+    heroLine1: document.getElementById('cfg_heroLine1').value,
+    heroItalic: document.getElementById('cfg_heroItalic').value,
+    heroLine3: document.getElementById('cfg_heroLine3').value,
+    lede: document.getElementById('cfg_lede').value,
+    footer: document.getElementById('cfg_footer').value,
+    eventLabel: document.getElementById('cfg_eventLabel').value,
+    eventDate: dtVal ? new Date(dtVal).toISOString() : null
+  };
+  try{ await api('/config', {method:'PUT', body:JSON.stringify(body)}); msg.textContent='Salvo!'; msg.className='msg ok'; }
+  catch(e){ msg.textContent = e.message; msg.className='msg error'; }
+}
+
+async function changePassword(){
+  const msg = document.getElementById('pwMsg');
+  const senhaAtual = document.getElementById('pw_atual').value;
+  const novaSenha = document.getElementById('pw_nova').value;
+  try{
+    await api('/change-password', {method:'POST', body:JSON.stringify({senhaAtual, novaSenha})});
+    msg.textContent='Senha alterada!'; msg.className='msg ok';
+    document.getElementById('pw_atual').value=''; document.getElementById('pw_nova').value='';
+  }catch(e){ msg.textContent = e.message; msg.className='msg error'; }
+}
+
+async function loadItems(){ ITEMS = await api('/items'); }
+
+function renderFilterBar(){
+  const bar = document.getElementById('filterBar');
+  bar.innerHTML = '';
+  const all = document.createElement('div');
+  all.className = 'filter-chip' + (ACTIVE_FILTER===null?' active':'');
+  all.textContent = 'Todas (' + ITEMS.length + ')';
+  all.onclick = ()=>{ ACTIVE_FILTER=null; renderFilterBar(); renderItems(); };
+  bar.appendChild(all);
+  CATEGORIES.forEach(cat=>{
+    const count = ITEMS.filter(i=>i.categoria===cat).length;
+    const chip = document.createElement('div');
+    chip.className = 'filter-chip' + (ACTIVE_FILTER===cat?' active':'');
+    chip.textContent = cat + ' (' + count + ')';
+    chip.onclick = ()=>{ ACTIVE_FILTER=cat; renderFilterBar(); renderItems(); };
+    bar.appendChild(chip);
+  });
+}
+
+function renderCatManageBar(){
+  const bar = document.getElementById('catManageBar');
+  bar.innerHTML = '';
+  CATEGORIES.forEach(cat=>{
+    const count = ITEMS.filter(i=>i.categoria===cat).length;
+    const chip = document.createElement('div');
+    chip.className = 'filter-chip';
+    chip.style.display = 'flex'; chip.style.alignItems = 'center'; chip.style.gap = '8px';
+    chip.innerHTML = `<span>${esc(cat)} (${count})</span>`;
+    const del = document.createElement('button');
+    del.textContent = '×';
+    del.className = 'btn-danger btn-sm';
+    del.style.padding = '2px 8px';
+    del.onclick = () => deleteCategory(cat, count);
+    chip.appendChild(del);
+    bar.appendChild(chip);
+  });
+}
+
+async function addCategory(){
+  const input = document.getElementById('newCatName');
+  const msg = document.getElementById('catMsg');
+  const nome = input.value.trim();
+  if(!nome){ msg.textContent='Digite um nome para a aba.'; msg.className='msg error'; return; }
+  if(CATEGORIES.some(c=>c.toLowerCase()===nome.toLowerCase())){
+    msg.textContent='Já existe uma aba com esse nome.'; msg.className='msg error'; return;
+  }
+  CATEGORIES.push(nome);
+  try{
+    await api('/config', {method:'PUT', body:JSON.stringify({categorias: CATEGORIES})});
+    input.value = '';
+    msg.textContent='Aba criada!'; msg.className='msg ok';
+    renderCatManageBar(); renderFilterBar();
+  }catch(e){ CATEGORIES.pop(); msg.textContent = e.message; msg.className='msg error'; }
+}
+
+async function deleteCategory(cat, count){
+  const msg = document.getElementById('catMsg');
+  if(count > 0){
+    msg.textContent = `Mova ou exclua os ${count} item(ns) dessa aba antes de removê-la.`;
+    msg.className = 'msg error';
+    return;
+  }
+  if(!confirm(`Excluir a aba "${cat}"?`)) return;
+  const prev = CATEGORIES.slice();
+  CATEGORIES = CATEGORIES.filter(c=>c!==cat);
+  try{
+    await api('/config', {method:'PUT', body:JSON.stringify({categorias: CATEGORIES})});
+    renderCatManageBar(); renderFilterBar();
+  }catch(e){ CATEGORIES = prev; msg.textContent = e.message; msg.className='msg error'; }
+}
+
+function esc(s){ return String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderItems(){
+  const list = document.getElementById('itemsList');
+  const items = ACTIVE_FILTER ? ITEMS.filter(i=>i.categoria===ACTIVE_FILTER) : ITEMS;
+  list.innerHTML = '';
+  items.forEach(item=>{
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    const moveOptions = CATEGORIES.filter(c=>c!==item.categoria)
+      .map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    card.innerHTML = `
+      <div class="item-head">
+        <div style="display:flex; gap:10px;">
+          ${item.imagemUrl ? `<img src="${esc(item.imagemUrl)}" alt="" style="width:44px;height:44px;border-radius:10px;object-fit:cover;flex:none;" onerror="this.style.display='none'">` : ''}
+          <div>
+            <div class="meta">${esc(item.categoria)}</div>
+            <div class="nome">${esc(item.nome)}</div>
+            ${item.reservadoPor ? `<div class="reserved-badge">reservado por ${esc(item.reservadoPor)}</div>` : ''}
+          </div>
+        </div>
+        <div class="item-actions">
+          ${item.reservadoPor ? `<button class="btn-ghost btn-sm" onclick="adminUnreserve('${item.id}')">liberar reserva</button>` : ''}
+          <button class="btn-ghost btn-sm" onclick="toggleEdit('${item.id}')">editar</button>
+          <button class="btn-danger btn-sm" onclick="deleteItem('${item.id}')">excluir</button>
+        </div>
+      </div>
+      ${moveOptions ? `
+      <div class="row" style="margin-top:10px;">
+        <select id="move_${item.id.replace(/[^a-zA-Z0-9]/g,'')}" style="flex:1;">${moveOptions}</select>
+        <button class="btn-ghost btn-sm" style="flex:none;" onclick="moveItem('${item.id}')">mover para aba</button>
+      </div>` : ''}
+      <div class="edit-form" id="edit-${item.id}"></div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+async function moveItem(id){
+  const sel = document.getElementById('move_'+id.replace(/[^a-zA-Z0-9]/g,''));
+  const novaCategoria = sel.value;
+  try{
+    await api('/items/'+id, {method:'PUT', body:JSON.stringify({categoria: novaCategoria})});
+    await loadItems(); renderCatManageBar(); renderFilterBar(); renderItems();
+  }catch(e){ alert(e.message); }
+}
+
+function itemFormHtml(item, idPrefix){
+  const links = (item?.links || []);
+  return `
+    <label>Categoria</label>
+    <select id="${idPrefix}_cat">${CATEGORIES.map(c=>`<option value="${esc(c)}" ${item?.categoria===c?'selected':''}>${esc(c)}</option>`).join('')}</select>
+    <label>Nome do item</label>
+    <input id="${idPrefix}_nome" value="${esc(item?.nome||'')}">
+    <label>Descrição / preferências</label>
+    <textarea id="${idPrefix}_desc">${esc(item?.descricao||'')}</textarea>
+    <label>Preço estimado (opcional, ex: R$ 250)</label>
+    <input id="${idPrefix}_preco" value="${esc(item?.precoEstimado||'')}">
+    <label>URL da imagem (opcional)</label>
+    <input id="${idPrefix}_img" placeholder="https://..." value="${esc(item?.imagemUrl||'')}">
+    ${item?.imagemUrl ? `<img src="${esc(item.imagemUrl)}" alt="" style="margin-top:8px; max-height:100px; border-radius:10px;" onerror="this.style.display='none'">` : ''}
+    <label>Links de lojas</label>
+    <div id="${idPrefix}_links">
+      ${links.map((l,i)=>linkRowHtml(idPrefix, i, l)).join('')}
+    </div>
+    <button class="btn-ghost btn-sm" type="button" onclick="addLinkRow('${idPrefix}')">+ adicionar link</button>
+    <div style="margin-top:14px; display:flex; gap:8px;">
+      <button class="btn-primary btn-sm" onclick="${idPrefix==='new' ? 'createItem()' : `updateItem('${item.id}')`}">Salvar item</button>
+      <button class="btn-ghost btn-sm" onclick="${idPrefix==='new' ? 'closeNewItemForm()' : `toggleEdit('${item.id}')`}">Cancelar</button>
+    </div>
+    <div class="msg" id="${idPrefix}_msg"></div>
+  `;
+}
+function linkRowHtml(idPrefix, i, l={}){
+  return `<div class="link-row-group" data-idx="${i}" style="border:1px solid var(--line); border-radius:10px; padding:10px; margin-bottom:8px;">
+    <div class="link-row" style="margin-bottom:6px;">
+      <input placeholder="Loja" class="lk-loja" value="${esc(l.loja||'')}">
+      <input placeholder="Modelo" class="lk-modelo" value="${esc(l.modelo||'')}">
+      <input placeholder="URL" class="lk-url" value="${esc(l.url||'')}">
+      <button class="btn-danger btn-sm" type="button" onclick="this.closest('.link-row-group').remove()">×</button>
+    </div>
+    <div class="link-row" style="opacity:.75;">
+      <input placeholder="Nome do link extra (opcional, ex: álbum de fotos)" class="lk-reflabel" value="${esc(l.refLabel||'')}">
+      <input placeholder="URL do link extra (opcional)" class="lk-refurl" value="${esc(l.refUrl||'')}">
+    </div>
+  </div>`;
+}
+function addLinkRow(idPrefix){
+  const wrap = document.getElementById(idPrefix+'_links');
+  const div = document.createElement('div');
+  div.innerHTML = linkRowHtml(idPrefix, wrap.children.length);
+  wrap.appendChild(div.firstElementChild);
+}
+function collectLinks(idPrefix){
+  const rows = document.querySelectorAll('#'+idPrefix+'_links .link-row-group');
+  const out = [];
+  rows.forEach(r=>{
+    const loja = r.querySelector('.lk-loja').value.trim();
+    const modelo = r.querySelector('.lk-modelo').value.trim();
+    const url = r.querySelector('.lk-url').value.trim();
+    const refLabel = r.querySelector('.lk-reflabel').value.trim();
+    const refUrl = r.querySelector('.lk-refurl').value.trim();
+    if(loja || url){
+      const link = {loja, modelo, url};
+      if(refUrl){ link.refLabel = refLabel; link.refUrl = refUrl; }
+      out.push(link);
+    }
+  });
+  return out;
+}
+
+function toggleEdit(id){
+  const el = document.getElementById('edit-'+id);
+  const item = ITEMS.find(i=>i.id===id);
+  if(el.classList.contains('open')){ el.classList.remove('open'); el.innerHTML=''; return; }
+  document.querySelectorAll('.edit-form.open').forEach(f=>{f.classList.remove('open'); f.innerHTML='';});
+  el.innerHTML = itemFormHtml(item, 'e_'+id.replace(/[^a-zA-Z0-9]/g,''));
+  el.classList.add('open');
+  // corrige onclick pra usar o id real (prefixo sanitizado só pra elementos DOM)
+  el.querySelector('.btn-primary').setAttribute('onclick', `updateItem('${id}','e_${id.replace(/[^a-zA-Z0-9]/g,'')}')`);
+  el.querySelector('.btn-ghost').setAttribute('onclick', `toggleEdit('${id}')`);
+}
+
+async function updateItem(id, idPrefix){
+  const msg = document.getElementById(idPrefix+'_msg');
+  const body = {
+    categoria: document.getElementById(idPrefix+'_cat').value,
+    nome: document.getElementById(idPrefix+'_nome').value.trim(),
+    descricao: document.getElementById(idPrefix+'_desc').value.trim(),
+    precoEstimado: document.getElementById(idPrefix+'_preco').value.trim(),
+    imagemUrl: document.getElementById(idPrefix+'_img').value.trim(),
+    links: collectLinks(idPrefix)
+  };
+  try{
+    await api('/items/'+id, {method:'PUT', body:JSON.stringify(body)});
+    await loadItems(); renderCatManageBar(); renderFilterBar(); renderItems();
+  }catch(e){ msg.textContent = e.message; msg.className='msg error'; }
+}
+
+async function deleteItem(id){
+  if(!confirm('Excluir este item da lista?')) return;
+  try{ await api('/items/'+id, {method:'DELETE'}); await loadItems(); renderCatManageBar(); renderFilterBar(); renderItems(); }
+  catch(e){ alert(e.message); }
+}
+
+async function adminUnreserve(id){
+  if(!confirm('Liberar a reserva deste item?')) return;
+  try{ await api('/items/'+id+'/unreserve', {method:'POST', body:JSON.stringify({})}); await loadItems(); renderItems(); }
+  catch(e){ alert(e.message); }
+}
+
+function openNewItemForm(){
+  document.getElementById('newItemArea').innerHTML = `<div class="edit-form open" style="margin-top:14px;">${itemFormHtml(null,'new')}</div>`;
+}
+function closeNewItemForm(){ document.getElementById('newItemArea').innerHTML=''; }
+
+async function createItem(){
+  const msg = document.getElementById('new_msg');
+  const body = {
+    categoria: document.getElementById('new_cat').value,
+    nome: document.getElementById('new_nome').value.trim(),
+    descricao: document.getElementById('new_desc').value.trim(),
+    precoEstimado: document.getElementById('new_preco').value.trim(),
+    imagemUrl: document.getElementById('new_img').value.trim(),
+    links: collectLinks('new')
+  };
+  if(!body.nome){ msg.textContent='Dê um nome ao item.'; msg.className='msg error'; return; }
+  try{
+    await api('/items', {method:'POST', body:JSON.stringify(body)});
+    closeNewItemForm();
+    await loadItems(); renderCatManageBar(); renderFilterBar(); renderItems();
+  }catch(e){ msg.textContent = e.message; msg.className='msg error'; }
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.admin-action,.admin-inline-panel button,.project-controls button,.project-modal button{border:1px solid rgb(255 255 255 / .16);background:rgb(0 0 0 / .65);border-radius:.65rem;padding:.55rem .8rem;font-size:.78rem;color:white;cursor:pointer}.admin-action:hover,.admin-inline-panel button:hover,.project-controls button:hover,.project-modal button:hover{border-color:rgb(255 255 255 / .4)}.admin-inline-panel,.project-modal{border:1px solid rgb(255 255 255 / .14);background:rgb(8 8 8 / .96);border-radius:1rem;padding:1rem}.admin-inline-panel label,.project-modal label{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;font-size:.75rem;color:rgb(255 255 255 / .65)}.admin-inline-panel input,.admin-inline-panel textarea,.project-modal input,.project-modal textarea{width:100%;border:1px solid rgb(255 255 255 / .13);background:#050505;border-radius:.6rem;padding:.7rem;color:white}.admin-editor-section{border-top:1px solid rgb(255 255 255 / .1);padding:1rem 0}.admin-editor-row,.admin-equipment-item,.admin-editor-actions{display:flex;gap:.5rem;align-items:center}.admin-equipment-item{margin:.5rem 0}.admin-equipment-item input{min-width:0}.admin-editor-actions{justify-content:flex-end;margin-top:1rem}.project-admin-row{display:flex;align-items:center;gap:1rem;border:1px solid rgb(255 255 255 / .1);background:rgb(0 0 0 / .6);border-radius:.85rem;padding:1rem}.project-admin-row p{margin-top:.2rem;font-size:.78rem;color:rgb(255 255 255 / .55)}.project-admin-row small{color:rgb(255 255 255 / .4)}.project-controls{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:.35rem}.private-badge{border:1px solid rgb(255 255 255 / .18);border-radius:999px;padding:.15rem .45rem;font-size:.65rem;color:rgb(255 255 255 / .6)}.project-modal-backdrop{position:fixed;inset:0;z-index:100;background:rgb(0 0 0 / .82);display:flex;align-items:center;justify-content:center;padding:1rem}.project-modal{width:min(850px,100%);max-height:92vh;overflow:auto}.project-modal h2{font-size:1.25rem;font-weight:700;margin-bottom:1rem}.project-modal .markdown-editor{min-height:42vh;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.82rem;line-height:1.5}.checkbox-label{flex-direction:row!important;align-items:center}.checkbox-label input{width:auto}.markdown-content{max-width:760px;line-height:1.75;color:rgb(255 255 255 / .78)}.markdown-content h1,.markdown-content h2,.markdown-content h3{color:white;font-weight:700;line-height:1.25;margin:2rem 0 .8rem}.markdown-content h1{font-size:2rem}.markdown-content h2{font-size:1.45rem;border-bottom:1px solid rgb(255 255 255 / .1);padding-bottom:.45rem}.markdown-content h3{font-size:1.15rem}.markdown-content p{margin:.8rem 0}.markdown-content ul{list-style:disc;padding-left:1.4rem;margin:.8rem 0}.markdown-content code{background:rgb(255 255 255 / .08);border-radius:.3rem;padding:.1rem .3rem}.markdown-content pre{overflow:auto;background:#050505;border:1px solid rgb(255 255 255 / .1);border-radius:.7rem;padding:1rem;margin:1rem 0}.markdown-content pre code{background:none;padding:0}.markdown-content blockquote{border-left:3px solid rgb(255 255 255 / .25);padding-left:1rem;color:rgb(255 255 255 / .55);margin:1rem 0}.markdown-content a{text-decoration:underline;color:white}@media(max-width:700px){.project-admin-row,.admin-equipment-item,.admin-editor-row{align-items:stretch;flex-direction:column}.project-controls{justify-content:flex-start;width:100%}}
+
+/* Shader Lab export-compatible fullscreen host. */
+.shader-lab-host,
+.shader-lab-host > *,
+.shader-lab-host canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.shader-lab-host canvas {
+  object-fit: cover;
+}

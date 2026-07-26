@@ -1,0 +1,43 @@
+import { HeroIdentityBlock } from "@/components/hero-identity";
+import { TwitchLiveCard } from "@/components/twitch-live-card";
+import { LatestVideoHighlight } from "@/components/latest-video-highlight";
+import { NowPlayingWidget } from "@/components/now-playing-widget";
+import { RanksWidget } from "@/components/ranks-widget";
+import { ChannelGroupBlock } from "@/components/channel-group";
+import { MaintenanceScreen } from "@/components/maintenance-screen";
+import { getHomeContent, getPagesStatus } from "@/lib/get-content";
+import { isAdminRequest } from "@/lib/is-admin-request";
+import { ContactSocialEditor } from "@/components/contact-social-editor";
+
+export default async function HomePage() {
+  const pages = await getPagesStatus();
+  if (pages.home === "staging" && !(await isAdminRequest())) {
+    return <MaintenanceScreen />;
+  }
+
+  const home = await getHomeContent();
+  const admin = await isAdminRequest();
+
+  return (
+    <div className="flex flex-col gap-16 sm:gap-24">
+      <section className="grid grid-cols-1 items-center gap-12 sm:grid-cols-2 sm:gap-8">
+        <HeroIdentityBlock identity={home.identity} />
+        <TwitchLiveCard content={home.twitchLive} />
+      </section>
+
+      <LatestVideoHighlight content={home.latestVideo} />
+
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <NowPlayingWidget content={home.nowPlayingWidget} />
+        <RanksWidget content={home.ranksWidget} />
+      </section>
+
+      <div>
+        {admin && <ContactSocialEditor mode="socials" compact />}
+        <ChannelGroupBlock group={home.youtube} />
+        <ChannelGroupBlock group={home.tiktok} />
+        <ChannelGroupBlock group={home.otherSocials} />
+      </div>
+    </div>
+  );
+}

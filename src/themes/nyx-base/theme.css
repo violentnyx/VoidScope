@@ -1,0 +1,57 @@
+:root,
+[data-theme="nyx-base"] {
+  color-scheme: dark;
+
+  --theme-background: #190404;
+  --theme-background-alt: #050505;
+  --theme-surface: rgb(8 8 8 / 0.84);
+  --theme-surface-strong: rgb(8 8 8 / 0.96);
+  --theme-surface-soft: rgb(0 0 0 / 0.60);
+  --theme-text: #ffffff;
+  --theme-text-muted: rgb(255 255 255 / 0.65);
+  --theme-text-subtle: rgb(255 255 255 / 0.45);
+  --theme-border: rgb(255 255 255 / 0.14);
+  --theme-border-strong: rgb(255 255 255 / 0.30);
+  --theme-primary: #ffffff;
+  --theme-primary-contrast: #050505;
+  --theme-danger: #ef4444;
+
+  --theme-radius-sm: 0.6rem;
+  --theme-radius-md: 0.85rem;
+  --theme-radius-lg: 1rem;
+  --theme-radius-pill: 999px;
+
+  --theme-shadow-card: 0 24px 80px rgb(0 0 0 / 0.35);
+  --theme-blur-card: 18px;
+  --theme-page-width: 64rem;
+  --theme-page-padding: 1rem;
+
+  --theme-transition-fast: 140ms;
+  --theme-transition-normal: 260ms;
+}
+
+body {
+  background: var(--theme-background);
+  color: var(--theme-text);
+}
+
+.theme-surface {
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-lg);
+  background: var(--theme-surface);
+  box-shadow: var(--theme-shadow-card);
+  backdrop-filter: blur(var(--theme-blur-card));
+}
+
+.theme-button {
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius-sm);
+  background: var(--theme-surface-soft);
+  color: var(--theme-text);
+  transition: border-color var(--theme-transition-fast), transform var(--theme-transition-fast);
+}
+
+.theme-button:hover {
+  border-color: var(--theme-border-strong);
+  transform: translateY(-1px);
+}
