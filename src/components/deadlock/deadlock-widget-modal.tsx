@@ -89,7 +89,7 @@ function MatchPortrait({
       ) : null}
       <span
         aria-hidden
-        className={`absolute bottom-[2%] left-1/2 z-30 h-[4px] w-[139px] -translate-x-1/2 ${
+        className={`absolute bottom-[2%] left-1/2 z-30 h-[4px] w-[132px] -translate-x-1/2 ${
           result === "win" ? "bg-[#00ef4f]" : result === "loss" ? "bg-[#ff3038]" : "bg-white/35"
         }`}
       />
