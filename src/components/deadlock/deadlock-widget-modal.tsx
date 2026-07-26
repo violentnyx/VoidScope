@@ -198,7 +198,7 @@ export function DeadlockWidgetModal({
             ) : null}
             <div>
               <h2
-                className="text-[29px] font-black uppercase italic leading-none sm:text-[44px]"
+                className="deadlock-lettering text-[29px] font-black uppercase leading-none sm:text-[44px]"
                 style={{ color: rankColor ?? "#fff" }}
               >
                 {rankName}
@@ -213,7 +213,7 @@ export function DeadlockWidgetModal({
           ) : (
             <div className="mt-5 grid gap-8 lg:mt-0">
               <section className="lg:absolute lg:bottom-[12%] lg:left-[-4%] lg:z-20 lg:w-[47%]">
-                <h3 className="mb-4 text-center text-[16px] font-black uppercase italic tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
+                <h3 className="deadlock-lettering mb-4 text-center text-[16px] font-black uppercase tracking-[-.02em] text-white sm:text-[22px]">Últimas partidas</h3>
                 <div className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-3 lg:grid-cols-[repeat(3,177px)] lg:justify-center lg:gap-x-1">
                   {recentMatches.map((match) => (
                     <article key={match.matchId} className="relative min-w-0 text-center">
@@ -233,7 +233,7 @@ export function DeadlockWidgetModal({
                             className="h-[70px] w-auto max-w-[140px] object-contain"
                           />
                         ) : (
-                          <h4 className="whitespace-nowrap text-[14px] font-black uppercase italic leading-none text-white sm:text-[16px]">
+                          <h4 className="deadlock-lettering whitespace-nowrap text-[14px] font-black uppercase leading-none text-white sm:text-[16px]">
                             {match.heroName}
                           </h4>
                         )}
@@ -253,7 +253,7 @@ export function DeadlockWidgetModal({
               </section>
 
               <aside className="relative min-h-[520px] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:min-h-0 lg:w-[65%]">
-                <h3 className="relative z-20 text-center text-[14px] font-black uppercase italic text-white sm:text-[18px]">Herói mais jogado nos últimos 30 dias</h3>
+                <h3 className="deadlock-lettering relative z-20 text-center text-[14px] font-black uppercase text-white sm:text-[18px]">Herói mais jogado nos últimos 30 dias</h3>
                 {hero ? (
                   <>
                     {hero.renderImageUrl ? (
@@ -273,7 +273,7 @@ export function DeadlockWidgetModal({
                           className="mx-auto h-[68px] w-auto max-w-[82%] object-contain drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:h-[96px]"
                         />
                       ) : (
-                        <h4 className="font-serif text-[68px] font-black uppercase italic leading-[.8] tracking-[-.07em] text-white drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:text-[96px]">
+                        <h4 className="deadlock-lettering text-[68px] font-black uppercase leading-[.8] tracking-[-.07em] text-white drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:text-[96px]">
                           {hero.heroName}
                         </h4>
                       )}

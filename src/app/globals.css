@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Deadlock Radiance";
+  src: url("https://cdn.jsdelivr.net/gh/6Horas/contentwebsite@main/fonts/radiance-bold.otf")
+    format("opentype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+.deadlock-lettering {
+  font-family: "Deadlock Radiance", var(--font-sans), system-ui, sans-serif;
+}
+
 @theme inline {
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
