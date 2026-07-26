@@ -61,6 +61,7 @@ export interface DeadlockHeroShowcase {
 type JsonRecord = Record<string, unknown>;
 
 let heroesCache: JsonRecord[] | null = null;
+let iconsCache: JsonRecord | null = null;
 
 async function getJson(url: string, revalidate = 300): Promise<unknown> {
   const response = await fetch(url, {
@@ -115,6 +116,32 @@ async function getHeroes() {
     }
   }
   return [];
+}
+
+async function getIcons() {
+  if (iconsCache) return iconsCache;
+  try {
+    const raw = await getJson(`${API}/assets/icons`, 3600);
+    if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+      iconsCache = raw as JsonRecord;
+      return iconsCache;
+    }
+  } catch {
+    // O widget usa o caminho conhecido como fallback.
+  }
+  return {};
+}
+
+function soulsIconUrl(icons: JsonRecord) {
+  const hud = icons.hud;
+  if (!hud || typeof hud !== "object" || Array.isArray(hud)) return "";
+  const hudIcons = (hud as JsonRecord).icons;
+  if (!hudIcons || typeof hudIcons !== "object" || Array.isArray(hudIcons)) return "";
+  return firstString(
+    hudIcons as JsonRecord,
+    ["icon_souls.svg", "icon_soul.svg"],
+    "",
+  );
 }
 
 async function getMatchHistory(accountId: string) {
@@ -271,9 +298,10 @@ export async function getDeadlockWidget(
   rankName: string,
   rankIconUrl: string | null,
 ): Promise<DeadlockWidgetPayload> {
-  const [history, heroes] = await Promise.all([
+  const [history, heroes, icons] = await Promise.all([
     getMatchHistory(accountId),
     getHeroes(),
+    getIcons(),
   ]);
 
   const recentSource = history.slice(0, 5);
@@ -527,7 +555,8 @@ export async function getDeadlockWidget(
   return {
     player: { rankName, rankIconUrl },
     assets: {
-      soulsIconUrl: `${ASSETS}/icons/hud/icons/icon_souls.svg`,
+      soulsIconUrl:
+        soulsIconUrl(icons) || `${ASSETS}/icons/hud/icons/icon_souls.svg`,
     },
     recentMatches,
     heroShowcases,
