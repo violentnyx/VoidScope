@@ -12,7 +12,6 @@ import {
   useShaderLabCanvasSource,
   type ShaderLabConfig,
 } from "@basementstudio/shader-lab";
-import { useShaderRenderEnabled } from "@/lib/use-shader-render-enabled";
 
 /**
  * Exported straight from Shader Lab. If you tweak the composition,
@@ -396,7 +395,6 @@ export function ShaderBackground({
   // We flip to the real mode right after mount.
   const [mode, setMode] = useState<BackgroundMode>("css");
   const [manuallyDisabled, setManuallyDisabled] = useState(false);
-  const renderEnabled = useShaderRenderEnabled();
 
   useEffect(() => {
     setManuallyDisabled(
@@ -405,12 +403,12 @@ export function ShaderBackground({
   }, []);
 
   useEffect(() => {
-    if (manuallyDisabled || !renderEnabled) {
+    if (manuallyDisabled) {
       setMode("css");
       return;
     }
     setMode(supportsWebGPU() ? "shader" : "video");
-  }, [manuallyDisabled, renderEnabled]);
+  }, [manuallyDisabled]);
 
   const clampedResolutionScale = useMemo(
     () => clamp(resolutionScale, MIN_RESOLUTION_SCALE, MAX_RESOLUTION_SCALE),
