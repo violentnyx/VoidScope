@@ -7,6 +7,12 @@ interface IdentityForm {
   tag: string;
   bio: string;
   avatarSrc: string | null;
+  avatarShape: "square" | "rounded" | "circle";
+  avatarBackgroundOpacity: number;
+  avatarFrameEnabled: boolean;
+  avatarFrameColor: string;
+  avatarFrameWidth: number;
+  socialLinksPosition: "below-avatar" | "below-bio";
 }
 
 interface BrandForm {
@@ -21,6 +27,12 @@ export function IdentityEditor() {
     tag: "",
     bio: "",
     avatarSrc: null,
+    avatarShape: "square",
+    avatarBackgroundOpacity: 60,
+    avatarFrameEnabled: false,
+    avatarFrameColor: "#ffffff",
+    avatarFrameWidth: 2,
+    socialLinksPosition: "below-avatar",
   });
   const [brand, setBrand] = useState<BrandForm>({ logoSrc: null });
   const [loading, setLoading] = useState(true);
@@ -38,6 +50,12 @@ export function IdentityEditor() {
           tag: data.identity?.tag ?? "",
           bio: data.identity?.bio ?? "",
           avatarSrc: data.identity?.avatarSrc ?? null,
+          avatarShape: data.identity?.avatarShape ?? "square",
+          avatarBackgroundOpacity: data.identity?.avatarBackgroundOpacity ?? 60,
+          avatarFrameEnabled: data.identity?.avatarFrameEnabled ?? false,
+          avatarFrameColor: data.identity?.avatarFrameColor ?? "#ffffff",
+          avatarFrameWidth: data.identity?.avatarFrameWidth ?? 2,
+          socialLinksPosition: data.identity?.socialLinksPosition ?? "below-avatar",
         });
         setBrand({ logoSrc: data.brand?.logoSrc ?? null });
       })
@@ -112,12 +130,26 @@ export function IdentityEditor() {
     );
   }
 
+  const avatarShapeClass = {
+    square: "rounded-none",
+    rounded: "rounded-xl",
+    circle: "rounded-full",
+  }[identity.avatarShape];
+
   return (
     <div className="rounded-xl border border-white/10 bg-black/60 p-4 sm:p-5">
       <div className="grid gap-5 sm:grid-cols-[auto_1fr]">
         {/* Avatar */}
         <div className="flex flex-col items-center gap-2">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-white/15 bg-black/40">
+          <div
+            className={`h-20 w-20 shrink-0 overflow-hidden ${avatarShapeClass}`}
+            style={{
+              backgroundColor: `rgb(0 0 0 / ${identity.avatarBackgroundOpacity / 100})`,
+              border: identity.avatarFrameEnabled
+                ? `${identity.avatarFrameWidth}px solid ${identity.avatarFrameColor}`
+                : "none",
+            }}
+          >
             {identity.avatarSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={identity.avatarSrc} alt="Avatar" className="h-full w-full object-cover" />
@@ -167,6 +199,109 @@ export function IdentityEditor() {
               className="w-full resize-none rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus-visible:border-white/40"
             />
           </Field>
+
+          <div className="grid gap-3 pt-1 sm:grid-cols-2">
+            <Field label="Formato da foto">
+              <select
+                value={identity.avatarShape}
+                onChange={(e) =>
+                  setIdentity((prev) => ({
+                    ...prev,
+                    avatarShape: e.target.value as IdentityForm["avatarShape"],
+                  }))
+                }
+                className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus-visible:border-white/40"
+              >
+                <option value="square">Quadrado</option>
+                <option value="rounded">Cantos suaves</option>
+                <option value="circle">Circular</option>
+              </select>
+            </Field>
+
+            <Field label="Posição dos ícones sociais">
+              <select
+                value={identity.socialLinksPosition}
+                onChange={(e) =>
+                  setIdentity((prev) => ({
+                    ...prev,
+                    socialLinksPosition:
+                      e.target.value as IdentityForm["socialLinksPosition"],
+                  }))
+                }
+                className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus-visible:border-white/40"
+              >
+                <option value="below-avatar">Abaixo da foto</option>
+                <option value="below-bio">Abaixo da bio</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label={`Opacidade do fundo da foto: ${identity.avatarBackgroundOpacity}%`}>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value={identity.avatarBackgroundOpacity}
+              onChange={(e) =>
+                setIdentity((prev) => ({
+                  ...prev,
+                  avatarBackgroundOpacity: Number(e.target.value),
+                }))
+              }
+              className="w-full accent-white"
+            />
+          </Field>
+
+          <div className="border border-white/10 bg-white/[.025] p-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm text-white/75">
+              <input
+                type="checkbox"
+                checked={identity.avatarFrameEnabled}
+                onChange={(e) =>
+                  setIdentity((prev) => ({
+                    ...prev,
+                    avatarFrameEnabled: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-white"
+              />
+              Usar moldura na foto
+            </label>
+
+            {identity.avatarFrameEnabled ? (
+              <div className="mt-3 grid grid-cols-[1fr_110px] gap-3">
+                <Field label={`Espessura: ${identity.avatarFrameWidth}px`}>
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    value={identity.avatarFrameWidth}
+                    onChange={(e) =>
+                      setIdentity((prev) => ({
+                        ...prev,
+                        avatarFrameWidth: Number(e.target.value),
+                      }))
+                    }
+                    className="w-full accent-white"
+                  />
+                </Field>
+                <Field label="Cor">
+                  <input
+                    type="color"
+                    value={identity.avatarFrameColor}
+                    onChange={(e) =>
+                      setIdentity((prev) => ({
+                        ...prev,
+                        avatarFrameColor: e.target.value,
+                      }))
+                    }
+                    className="h-9 w-full cursor-pointer border border-white/15 bg-black/40 p-1"
+                  />
+                </Field>
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
 

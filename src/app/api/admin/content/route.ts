@@ -74,6 +74,40 @@ export async function POST(request: NextRequest) {
     if (typeof identity.avatarSrc === "string" || identity.avatarSrc === null) {
       partial.identity.avatarSrc = identity.avatarSrc as string | null;
     }
+    if (
+      identity.avatarShape === "square" ||
+      identity.avatarShape === "rounded" ||
+      identity.avatarShape === "circle"
+    ) {
+      partial.identity.avatarShape = identity.avatarShape;
+    }
+    if (typeof identity.avatarBackgroundOpacity === "number") {
+      partial.identity.avatarBackgroundOpacity = Math.min(
+        100,
+        Math.max(0, Math.round(identity.avatarBackgroundOpacity)),
+      );
+    }
+    if (typeof identity.avatarFrameEnabled === "boolean") {
+      partial.identity.avatarFrameEnabled = identity.avatarFrameEnabled;
+    }
+    if (
+      typeof identity.avatarFrameColor === "string" &&
+      /^#[0-9a-f]{6}$/i.test(identity.avatarFrameColor)
+    ) {
+      partial.identity.avatarFrameColor = identity.avatarFrameColor;
+    }
+    if (typeof identity.avatarFrameWidth === "number") {
+      partial.identity.avatarFrameWidth = Math.min(
+        12,
+        Math.max(1, Math.round(identity.avatarFrameWidth)),
+      );
+    }
+    if (
+      identity.socialLinksPosition === "below-avatar" ||
+      identity.socialLinksPosition === "below-bio"
+    ) {
+      partial.identity.socialLinksPosition = identity.socialLinksPosition;
+    }
   }
 
   if (typeof input.brand === "object" && input.brand !== null) {

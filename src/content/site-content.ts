@@ -27,6 +27,12 @@ export const siteContent: SiteContent = {
     identity: {
       avatarSrc: null,
       avatarAlt: "Foto de perfil de Nyx_aim",
+      avatarShape: "square",
+      avatarBackgroundOpacity: 60,
+      avatarFrameEnabled: false,
+      avatarFrameColor: "#ffffff",
+      avatarFrameWidth: 2,
+      socialLinksPosition: "below-avatar",
       name: "Nyx_aim",
       tag: "Filmmaker",
       bio: "Filmmaker. Links, redes e canais.",

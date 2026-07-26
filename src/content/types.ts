@@ -42,6 +42,12 @@ export interface ContactContent {
 export interface HeroIdentity {
   avatarSrc: string | null;
   avatarAlt: string;
+  avatarShape: "square" | "rounded" | "circle";
+  avatarBackgroundOpacity: number;
+  avatarFrameEnabled: boolean;
+  avatarFrameColor: string;
+  avatarFrameWidth: number;
+  socialLinksPosition: "below-avatar" | "below-bio";
   name: string;
   tag: string;
   bio: string;

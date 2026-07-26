@@ -38,6 +38,12 @@ export interface ContentOverrides {
     tag?: string;
     bio?: string;
     avatarSrc?: string | null;
+    avatarShape?: "square" | "rounded" | "circle";
+    avatarBackgroundOpacity?: number;
+    avatarFrameEnabled?: boolean;
+    avatarFrameColor?: string;
+    avatarFrameWidth?: number;
+    socialLinksPosition?: "below-avatar" | "below-bio";
   };
   brand?: {
     name?: string;
