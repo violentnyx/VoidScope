@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getPersistentSWR } from "@/lib/persistent-swr-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -135,7 +136,23 @@ export async function GET(req: NextRequest) {
     if (source === "deadlock-api") {
       const accountId = req.nextUrl.searchParams.get("accountId");
       if (!accountId) return NextResponse.json(NOT_FOUND);
-      return NextResponse.json(await getDeadlockRank(accountId));
+      const normalizedAccountId = normalizeSteamAccountId(accountId);
+      if (!normalizedAccountId) return NextResponse.json(NOT_FOUND);
+      const cached = await getPersistentSWR({
+        key: `deadlock-rank:${normalizedAccountId}`,
+        maxAgeMs: 5 * 60 * 1000,
+        forceRefresh: req.nextUrl.searchParams.get("refresh") === "1",
+        loader: () => getDeadlockRank(normalizedAccountId),
+        isValid: (result) => result.ok && result.rank !== null,
+      });
+      return NextResponse.json(cached.value, {
+        headers: {
+          "Cache-Control": "public, max-age=60, stale-while-revalidate=600",
+          "X-Nyx-Cache": cached.state,
+          "X-Nyx-Cache-Checked-At": new Date(cached.checkedAt).toISOString(),
+          "X-Nyx-Cache-Updated-At": new Date(cached.updatedAt).toISOString(),
+        },
+      });
     }
 
     if (source === "overfast-api") {
