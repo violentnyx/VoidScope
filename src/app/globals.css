@@ -13,6 +13,21 @@
   font-family: "Deadlock Radiance", var(--font-sans), system-ui, sans-serif;
 }
 
+@keyframes deadlock-hero-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(18%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.deadlock-hero-slide-in {
+  animation: deadlock-hero-slide-in 700ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
 @theme inline {
   --font-sans: var(--font-sans), system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;

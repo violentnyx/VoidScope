@@ -234,7 +234,7 @@ export function DeadlockWidgetModal({
     if (showcaseCount <= 1) return;
     const timer = window.setInterval(() => {
       setShowcaseIndex((current) => (current + 1) % showcaseCount);
-    }, 7000);
+    }, 15000);
     return () => window.clearInterval(timer);
   }, [open, showcaseCount]);
 
@@ -357,7 +357,7 @@ export function DeadlockWidgetModal({
                         key={`${hero.kind}-${hero.heroId}`}
                         src={hero.renderImageUrl}
                         alt={hero.heroName}
-                        className={`pointer-events-none absolute right-0 top-[-20%] h-[140%] w-[140%] object-contain object-right drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
+                        className={`deadlock-hero-slide-in pointer-events-none absolute right-0 top-[-20%] h-[140%] w-[140%] object-contain object-right drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
                       />
                     ) : null}
                     <div className="absolute inset-x-0 bottom-[5%] z-20 text-center">
