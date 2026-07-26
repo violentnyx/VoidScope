@@ -30,8 +30,8 @@ fi
 
 git fetch origin "$branch"
 git merge --ff-only "origin/$branch"
-npm ci
-npm run build
+nice -n 15 npm ci
+NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=512}" nice -n 15 npm run build
 
 standalone_dir="$repo_root/.next/standalone"
 if [[ ! -f "$standalone_dir/server.js" ]]; then
