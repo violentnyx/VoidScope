@@ -27,6 +27,7 @@ export interface DeadlockWidgetPayload {
     soulsIconUrl: string;
   };
   recentMatches: DeadlockMatchSummary[];
+  heroShowcases: DeadlockHeroShowcase[];
   mostPlayedHero: null | {
     heroId: number | null;
     heroName: string;
@@ -36,6 +37,25 @@ export interface DeadlockWidgetPayload {
     wins: number;
     winRate: number;
   };
+}
+
+export interface DeadlockHeroShowcase {
+  kind: "recent" | "career" | "career-kda" | "lane";
+  title: string;
+  heroId: number;
+  heroName: string;
+  nameImageUrl: string | null;
+  renderImageUrl: string;
+  matches: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  winRate: number;
+  kills: number;
+  deaths: number;
+  assists: number;
+  kda: number;
+  timePlayedSeconds: number;
 }
 
 type JsonRecord = Record<string, unknown>;
@@ -112,6 +132,49 @@ async function getMatchHistory(accountId: string) {
   return [];
 }
 
+async function getHeroStats(accountId: string) {
+  try {
+    return unwrapArray(
+      await getJson(
+        `${API}/players/hero-stats?account_ids=${encodeURIComponent(accountId)}`,
+        900,
+      ),
+    );
+  } catch {
+    return [];
+  }
+}
+
+async function getLaneMatchMetadata(history: JsonRecord[]) {
+  const matchIds = history
+    .map((match) => firstNumber(match, ["match_id", "matchId", "id"], -1))
+    .filter((matchId) => matchId >= 0);
+  const chunks: number[][] = [];
+  for (let index = 0; index < matchIds.length; index += 40) {
+    chunks.push(matchIds.slice(index, index + 40));
+  }
+
+  const responses = await Promise.all(
+    chunks.map(async (chunk) => {
+      const params = new URLSearchParams({
+        include_info: "true",
+        include_player_info: "true",
+        include_player_kda: "true",
+      });
+      for (const matchId of chunk) params.append("match_ids", String(matchId));
+      try {
+        const raw = await getJson(`${API}/matches/metadata?${params}`, 3600);
+        if (Array.isArray(raw)) return unwrapArray(raw);
+        return raw && typeof raw === "object" ? [raw as JsonRecord] : [];
+      } catch {
+        return [];
+      }
+    }),
+  );
+
+  return responses.flat();
+}
+
 async function getMatchMetadata(matchId: string): Promise<JsonRecord | null> {
   for (const endpoint of [
     `${API}/matches/${matchId}/metadata`,
@@ -152,6 +215,34 @@ function heroRenderUrl(heroName: string) {
   return cdnUrl(`/deadlock/hero-renders/${filename}.png`);
 }
 
+function calculateKda(kills: number, deaths: number, assists: number) {
+  return (kills + assists) / Math.max(1, deaths);
+}
+
+function heroShowcase(
+  kind: DeadlockHeroShowcase["kind"],
+  title: string,
+  heroId: number,
+  heroes: JsonRecord[],
+  values: Omit<
+    DeadlockHeroShowcase,
+    "kind" | "title" | "heroId" | "heroName" | "nameImageUrl" | "renderImageUrl"
+  >,
+): DeadlockHeroShowcase {
+  const hero = findHero(heroes, heroId);
+  const heroName = firstString(hero ?? {}, ["name", "display_name"], "Unknown");
+  const nameImageUrl = firstString(heroImages(hero), ["name_image"], "");
+  return {
+    kind,
+    title,
+    heroId,
+    heroName,
+    nameImageUrl: nameImageUrl || null,
+    renderImageUrl: heroRenderUrl(heroName),
+    ...values,
+  };
+}
+
 function badgeAssetUrl(badge: number | null) {
   if (badge == null || badge < 0) return null;
   const rank = Math.floor(badge / 10);
@@ -186,9 +277,15 @@ export async function getDeadlockWidget(
   ]);
 
   const recentSource = history.slice(0, 5);
-  const metadata = await Promise.all(
-    recentSource.map((match) => getMatchMetadata(String(firstNumber(match, ["match_id", "matchId", "id"])))),
-  );
+  const [metadata, careerStats, laneMatches] = await Promise.all([
+    Promise.all(
+      recentSource.map((match) =>
+        getMatchMetadata(String(firstNumber(match, ["match_id", "matchId", "id"]))),
+      ),
+    ),
+    getHeroStats(accountId),
+    getLaneMatchMetadata(history),
+  ]);
 
   const recentMatches: DeadlockMatchSummary[] = recentSource.map((match, index) => {
     const heroIdValue = firstNumber(match, ["hero_id", "heroId", "player_hero_id"], -1);
@@ -221,14 +318,42 @@ export async function getDeadlockWidget(
 
   const cutoff = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60);
   const lastThirtyDays = history.filter((match) => firstNumber(match, ["start_time"], 0) >= cutoff);
-  const stats = new Map<number, { matches: number; wins: number }>();
+  const stats = new Map<
+    number,
+    {
+      matches: number;
+      wins: number;
+      draws: number;
+      losses: number;
+      kills: number;
+      deaths: number;
+      assists: number;
+      timePlayedSeconds: number;
+    }
+  >();
 
   for (const match of lastThirtyDays) {
     const heroId = firstNumber(match, ["hero_id", "heroId", "player_hero_id"], -1);
     if (heroId < 0) continue;
-    const current = stats.get(heroId) ?? { matches: 0, wins: 0 };
+    const current = stats.get(heroId) ?? {
+      matches: 0,
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      kills: 0,
+      deaths: 0,
+      assists: 0,
+      timePlayedSeconds: 0,
+    };
     current.matches += 1;
-    if (matchResult(match) === "win") current.wins += 1;
+    const result = matchResult(match);
+    if (result === "win") current.wins += 1;
+    else if (result === "loss") current.losses += 1;
+    else current.draws += 1;
+    current.kills += firstNumber(match, ["player_kills", "kills"]);
+    current.deaths += firstNumber(match, ["player_deaths", "deaths"]);
+    current.assists += firstNumber(match, ["player_assists", "assists"]);
+    current.timePlayedSeconds += firstNumber(match, ["match_duration_s", "duration_s"]);
     stats.set(heroId, current);
   }
 
@@ -236,6 +361,168 @@ export async function getDeadlockWidget(
   const topHero = topEntry ? findHero(heroes, topEntry[0]) : null;
   const topHeroName = firstString(topHero ?? {}, ["name", "display_name"], "Unknown");
   const topHeroNameImageUrl = firstString(heroImages(topHero), ["name_image"], "");
+  const heroShowcases: DeadlockHeroShowcase[] = [];
+
+  if (topEntry) {
+    const [heroId, value] = topEntry;
+    heroShowcases.push(
+      heroShowcase(
+        "recent",
+        "Herói mais jogado nos últimos 30 dias",
+        heroId,
+        heroes,
+        {
+          ...value,
+          winRate: value.matches ? (value.wins / value.matches) * 100 : 0,
+          kda: calculateKda(value.kills, value.deaths, value.assists),
+        },
+      ),
+    );
+  }
+
+  const careerEntries = careerStats.filter(
+    (entry) => firstNumber(entry, ["matches_played"], 0) > 0,
+  );
+  const meaningfulCareerEntries = careerEntries.filter(
+    (entry) => firstNumber(entry, ["matches_played"], 0) >= 10,
+  );
+  const careerPool = meaningfulCareerEntries.length
+    ? meaningfulCareerEntries
+    : careerEntries;
+
+  const bestCareer = [...careerPool].sort((left, right) => {
+    const leftMatches = firstNumber(left, ["matches_played"], 0);
+    const rightMatches = firstNumber(right, ["matches_played"], 0);
+    const leftRate = firstNumber(left, ["wins"], 0) / Math.max(1, leftMatches);
+    const rightRate = firstNumber(right, ["wins"], 0) / Math.max(1, rightMatches);
+    return rightRate - leftRate || rightMatches - leftMatches;
+  })[0];
+
+  const bestCareerKda = [...careerPool].sort((left, right) => {
+    const leftKda = calculateKda(
+      firstNumber(left, ["kills"]),
+      firstNumber(left, ["deaths"]),
+      firstNumber(left, ["assists"]),
+    );
+    const rightKda = calculateKda(
+      firstNumber(right, ["kills"]),
+      firstNumber(right, ["deaths"]),
+      firstNumber(right, ["assists"]),
+    );
+    return rightKda - leftKda;
+  })[0];
+
+  const addCareerShowcase = (
+    entry: JsonRecord | undefined,
+    kind: "career" | "career-kda",
+    title: string,
+  ) => {
+    if (!entry) return;
+    const heroId = firstNumber(entry, ["hero_id"], -1);
+    if (heroId < 0) return;
+    const matches = firstNumber(entry, ["matches_played"]);
+    const wins = firstNumber(entry, ["wins"]);
+    const kills = firstNumber(entry, ["kills"]);
+    const deaths = firstNumber(entry, ["deaths"]);
+    const assists = firstNumber(entry, ["assists"]);
+    heroShowcases.push(
+      heroShowcase(kind, title, heroId, heroes, {
+        matches,
+        wins,
+        draws: 0,
+        losses: Math.max(0, matches - wins),
+        winRate: matches ? (wins / matches) * 100 : 0,
+        kills,
+        deaths,
+        assists,
+        kda: calculateKda(kills, deaths, assists),
+        timePlayedSeconds: firstNumber(entry, ["time_played"]),
+      }),
+    );
+  };
+
+  addCareerShowcase(bestCareer, "career", "Melhor herói da carreira");
+  addCareerShowcase(bestCareerKda, "career-kda", "Melhor KDA da carreira");
+
+  const laneStats = new Map<
+    number,
+    {
+      matches: number;
+      wins: number;
+      draws: number;
+      losses: number;
+      kills: number;
+      deaths: number;
+      assists: number;
+    }
+  >();
+
+  for (const match of laneMatches) {
+    const players = unwrapArray(match.players);
+    const player = players.find(
+      (candidate) => String(firstNumber(candidate, ["account_id"], -1)) === accountId,
+    );
+    if (!player) continue;
+    const assignedLane = firstNumber(player, ["assigned_lane"], -1);
+    const playerTeam = firstString(player, ["team"], "");
+    if (assignedLane < 0 || !playerTeam) continue;
+    const winningTeam = firstString(match, ["winning_team"], "");
+    const matchOutcome = firstString(match, ["match_outcome"], "").toLowerCase();
+    const seenHeroIds = new Set<number>();
+
+    for (const opponent of players) {
+      const opponentTeam = firstString(opponent, ["team"], "");
+      if (
+        !opponentTeam ||
+        opponentTeam === playerTeam ||
+        firstNumber(opponent, ["assigned_lane"], -2) !== assignedLane
+      ) {
+        continue;
+      }
+      const heroId = firstNumber(opponent, ["hero_id"], -1);
+      if (heroId < 0 || seenHeroIds.has(heroId)) continue;
+      seenHeroIds.add(heroId);
+
+      const current = laneStats.get(heroId) ?? {
+        matches: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        kills: 0,
+        deaths: 0,
+        assists: 0,
+      };
+      current.matches += 1;
+      if (winningTeam === playerTeam) current.wins += 1;
+      else if (!winningTeam || /draw|tie/.test(matchOutcome)) current.draws += 1;
+      else current.losses += 1;
+      current.kills += firstNumber(player, ["kills"]);
+      current.deaths += firstNumber(player, ["deaths"]);
+      current.assists += firstNumber(player, ["assists"]);
+      laneStats.set(heroId, current);
+    }
+  }
+
+  const topLaneEntry = [...laneStats.entries()].sort(
+    (left, right) => right[1].matches - left[1].matches,
+  )[0];
+  if (topLaneEntry) {
+    const [heroId, value] = topLaneEntry;
+    heroShowcases.push(
+      heroShowcase(
+        "lane",
+        "Herói mais enfrentado na fase de lane",
+        heroId,
+        heroes,
+        {
+          ...value,
+          winRate: value.matches ? (value.wins / value.matches) * 100 : 0,
+          kda: calculateKda(value.kills, value.deaths, value.assists),
+          timePlayedSeconds: 0,
+        },
+      ),
+    );
+  }
 
   return {
     player: { rankName, rankIconUrl },
@@ -243,6 +530,7 @@ export async function getDeadlockWidget(
       soulsIconUrl: `${ASSETS}/icons/hud/icons/icon_souls.svg`,
     },
     recentMatches,
+    heroShowcases,
     mostPlayedHero: topEntry ? {
       heroId: topEntry[0],
       heroName: topHeroName,

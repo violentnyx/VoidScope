@@ -7,6 +7,25 @@ import { cdnUrl } from "@/lib/cdn";
 const HERO_MASK_URL = cdnUrl("/deadlock/ui/hero-mask.png");
 const MODAL_BACKGROUND_URL = cdnUrl("/deadlock/ui/modal-background.png");
 
+interface HeroShowcase {
+  kind: "recent" | "career" | "career-kda" | "lane";
+  title: string;
+  heroId: number;
+  heroName: string;
+  nameImageUrl: string | null;
+  renderImageUrl: string;
+  matches: number;
+  wins: number;
+  draws: number;
+  losses: number;
+  winRate: number;
+  kills: number;
+  deaths: number;
+  assists: number;
+  kda: number;
+  timePlayedSeconds: number;
+}
+
 interface WidgetPayload {
   player: { rankName: string; rankIconUrl: string | null };
   assets: { soulsIconUrl: string };
@@ -23,6 +42,7 @@ interface WidgetPayload {
     averageBadge: number | null;
     averageRankIconUrl: string | null;
   }>;
+  heroShowcases: HeroShowcase[];
   mostPlayedHero: null | {
     heroName: string;
     nameImageUrl: string | null;
@@ -40,6 +60,46 @@ function formatSouls(value: number) {
 
 function formatWinRate(value: number) {
   return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatKda(value: number) {
+  return value.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatPlayTime(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return hours > 0 ? `${hours}h ${minutes}min` : `${minutes}min`;
+}
+
+function showcaseStats(showcase: HeroShowcase) {
+  if (showcase.kind === "career") {
+    return [
+      formatPlayTime(showcase.timePlayedSeconds),
+      `${formatWinRate(showcase.winRate)}% WR`,
+      `${showcase.kills} kills`,
+    ];
+  }
+  if (showcase.kind === "career-kda") {
+    return [
+      `${formatKda(showcase.kda)} KDA`,
+      `${showcase.matches} partidas`,
+      `${formatWinRate(showcase.winRate)}% WR`,
+    ];
+  }
+  if (showcase.kind === "lane") {
+    return [
+      `${formatWinRate(showcase.winRate)}% WR`,
+      `${showcase.draws} empates`,
+      `${showcase.losses} derrotas`,
+      `${formatKda(showcase.kda)} KDA`,
+    ];
+  }
+  return [
+    `${formatWinRate(showcase.winRate)}% WR`,
+    `${showcase.matches} partidas`,
+    `${formatKda(showcase.kda)} KDA`,
+  ];
 }
 
 function MatchPortrait({
@@ -120,6 +180,7 @@ export function DeadlockWidgetModal({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [showcaseIndex, setShowcaseIndex] = useState(0);
   const accountId = game.steamAccountId ?? "";
 
   const query = useMemo(() => {
@@ -166,8 +227,22 @@ export function DeadlockWidgetModal({
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
+  const showcaseCount = data?.heroShowcases.length ?? 0;
+  useEffect(() => {
+    if (!open) return;
+    setShowcaseIndex(0);
+    if (showcaseCount <= 1) return;
+    const timer = window.setInterval(() => {
+      setShowcaseIndex((current) => (current + 1) % showcaseCount);
+    }, 7000);
+    return () => window.clearInterval(timer);
+  }, [open, showcaseCount]);
+
   if (!open) return null;
-  const hero = data?.mostPlayedHero;
+  const hero = showcaseCount
+    ? data?.heroShowcases[showcaseIndex % showcaseCount] ?? null
+    : null;
+  const heroStats = hero ? showcaseStats(hero) : [];
   const recentMatches = (data?.recentMatches ?? []).slice(0, 3);
 
   return (
@@ -253,12 +328,33 @@ export function DeadlockWidgetModal({
               </section>
 
               <aside className="relative min-h-[520px] overflow-hidden lg:absolute lg:inset-y-0 lg:right-0 lg:min-h-0 lg:w-[65%]">
-                <h3 className="deadlock-lettering relative z-20 text-center text-[14px] font-black uppercase text-white sm:text-[18px]">Herói mais jogado nos últimos 30 dias</h3>
+                <h3 className="deadlock-lettering relative z-20 text-center text-[14px] font-black uppercase text-white sm:text-[18px]">
+                  {hero?.title ?? "Destaques de heróis"}
+                </h3>
+                {showcaseCount > 1 ? (
+                  <div className="relative z-30 mt-2 flex justify-center gap-1.5">
+                    {data?.heroShowcases.map((showcase, index) => (
+                      <button
+                        key={showcase.kind}
+                        type="button"
+                        onClick={() => setShowcaseIndex(index)}
+                        aria-label={`Mostrar ${showcase.title}`}
+                        aria-current={index === showcaseIndex ? "true" : undefined}
+                        className={`h-1.5 rounded-full transition-all ${
+                          index === showcaseIndex
+                            ? "w-6 bg-white"
+                            : "w-1.5 bg-white/35 hover:bg-white/70"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                ) : null}
                 {hero ? (
                   <>
                     {hero.renderImageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
+                        key={`${hero.kind}-${hero.heroId}`}
                         src={hero.renderImageUrl}
                         alt={hero.heroName}
                         className={`pointer-events-none absolute right-0 top-[-20%] h-[140%] w-[140%] object-contain object-right drop-shadow-[0_22px_28px_rgba(0,0,0,.55)] transition-all duration-1000 ease-[cubic-bezier(.16,1,.3,1)] ${entered ? "translate-x-0 opacity-100" : "translate-x-[55%] opacity-0"}`}
@@ -275,13 +371,24 @@ export function DeadlockWidgetModal({
                       ) : (
                         <h4 className="deadlock-lettering text-[68px] font-black uppercase leading-[.8] tracking-[-.07em] text-white drop-shadow-[0_5px_8px_rgba(0,0,0,.85)] sm:text-[96px]">
                           {hero.heroName}
-                        </h4>
-                      )}
-                      <p className="mt-2 text-[14px] font-bold text-white/60 sm:text-[16px]">{formatWinRate(hero.winRate)}% WR · {hero.matches} partidas</p>
+                          </h4>
+                        )}
+                      <p className="mt-2 text-[14px] font-bold text-white/60 sm:text-[16px]">
+                        {heroStats.map((stat, index) => (
+                          <span key={stat}>
+                            {index > 0 ? (
+                              <span className="mx-1 font-black text-white/75">·</span>
+                            ) : null}
+                            {stat}
+                          </span>
+                        ))}
+                      </p>
                     </div>
                   </>
                 ) : (
-                  <div className="grid h-full place-items-center text-white/40">Sem dados dos últimos 30 dias.</div>
+                  <div className="grid h-full place-items-center text-white/40">
+                    Sem estatísticas suficientes.
+                  </div>
                 )}
               </aside>
             </div>
