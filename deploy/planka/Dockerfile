@@ -9,7 +9,9 @@ COPY --chown=node:node app/ ./
 RUN npm ci \
   && npm prune --omit=dev \
   && npm cache clean --force \
-  && chmod +x start.sh
+  && chmod +x start.sh \
+  && mkdir -p logs .tmp \
+  && chown -R node:node logs .tmp
 
 USER node
 
