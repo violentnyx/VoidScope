@@ -8,7 +8,8 @@ COPY --chown=node:node app/ ./
 
 RUN npm ci \
   && npm prune --omit=dev \
-  && npm cache clean --force
+  && npm cache clean --force \
+  && chmod +x start.sh
 
 USER node
 
