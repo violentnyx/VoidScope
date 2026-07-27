@@ -169,6 +169,9 @@ export function IdentityEditor() {
               disabled={uploadingAvatar}
             />
           </label>
+          <p className="max-w-40 text-center text-[10px] leading-relaxed text-white/40">
+            GIFs são convertidos automaticamente para WebP animado.
+          </p>
         </div>
 
         {/* Text fields */}
