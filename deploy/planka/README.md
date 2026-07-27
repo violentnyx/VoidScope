@@ -25,8 +25,8 @@ As variáveis não secretas ficam em `compose.yaml`:
 Os valores de `DATABASE_PASSWORD`, `SECRET_KEY` e
 `DEFAULT_ADMIN_PASSWORD` são gerados no primeiro deploy em
 `/var/lib/planka/secrets`. Eles não são substituídos em deploys posteriores.
-O diretório é acessível apenas pelo root; os arquivos são legíveis no mount
-do container para que o processo do Planka possa consumir os Docker secrets.
+O diretório e os arquivos permitem leitura somente ao root e ao grupo 1000,
+usado pelo processo não privilegiado do Planka no container.
 
 ## Deploy no servidor
 

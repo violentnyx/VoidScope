@@ -23,7 +23,7 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
-install -d -m 0700 "$secrets_dir"
+install -d -m 0710 -o root -g 1000 "$secrets_dir"
 
 create_secret() {
   local path="$1"
@@ -33,10 +33,10 @@ create_secret() {
     openssl rand -base64 "$bytes" | tr -d '\n' > "$path"
     printf '\n' >> "$path"
   fi
-  # Compose bind-mounts local secret files without remapping ownership.
-  # The parent directory remains root-only (0700), while the mounted file
-  # must be readable by the unprivileged `node` user inside the container.
-  chmod 0644 "$path"
+  # Compose bind-mounts local secrets without remapping ownership. The
+  # container's unprivileged `node` process uses uid/gid 1000.
+  chown root:1000 "$path"
+  chmod 0640 "$path"
 }
 
 create_secret "$secrets_dir/database_password" 32
