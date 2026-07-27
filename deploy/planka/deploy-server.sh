@@ -30,7 +30,8 @@ create_secret() {
   local bytes="$2"
   if [[ ! -s "$path" ]]; then
     umask 077
-    openssl rand -base64 "$bytes" | tr -d '\n' > "$path"
+    # Hex is URL-safe, including when embedded in DATABASE_URL.
+    openssl rand -hex "$bytes" | tr -d '\n' > "$path"
     printf '\n' >> "$path"
   fi
   # Compose bind-mounts local secrets without remapping ownership. The
