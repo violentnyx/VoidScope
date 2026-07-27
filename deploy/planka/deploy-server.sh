@@ -33,7 +33,10 @@ create_secret() {
     openssl rand -base64 "$bytes" | tr -d '\n' > "$path"
     printf '\n' >> "$path"
   fi
-  chmod 0600 "$path"
+  # Compose bind-mounts local secret files without remapping ownership.
+  # The parent directory remains root-only (0700), while the mounted file
+  # must be readable by the unprivileged `node` user inside the container.
+  chmod 0644 "$path"
 }
 
 create_secret "$secrets_dir/database_password" 32
