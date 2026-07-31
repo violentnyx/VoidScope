@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { IdentityEditor } from "@/components/identity-editor";
 import { IntegrationsEditor } from "@/components/integrations-editor";
 import { GalleryManager } from "@/components/gallery-manager";
@@ -160,6 +161,18 @@ export function AdminDashboard() {
       <p className="mt-2 mb-6 max-w-xl text-sm text-white/60">
         Controle de páginas, seções e identidade do site.
       </p>
+
+      <nav className="mb-8 flex flex-wrap gap-2 rounded-xl border border-white/10 bg-black/60 p-2">
+        <span className="rounded-lg bg-white px-4 py-2 text-xs font-bold text-black">
+          Conteúdo e configurações
+        </span>
+        <Link
+          href="/admin/layout"
+          className="rounded-lg px-4 py-2 text-xs font-bold text-white/60 transition hover:bg-white/10 hover:text-white"
+        >
+          Editor de Layout <span className="ml-1 text-violet-300">Alpha</span>
+        </Link>
+      </nav>
 
       {/* ---------- Identidade ---------- */}
       <section className="mb-10">
