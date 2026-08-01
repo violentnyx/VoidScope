@@ -6,6 +6,11 @@ Somente código e arquivos de `public/` entram no repositório. `.env.local`,
 credenciais administrativas e os arquivos JSON persistentes de `data/` são
 ignorados. O servidor deve manter esses arquivos fora do ciclo de atualização.
 
+O dashboard administrativo e o CRM fazem parte da aplicação Next.js principal.
+Os dados do CRM ficam em `data/crm.json`, no mesmo diretório persistente das
+demais configurações. O antigo deploy separado do Planka foi removido e não
+deve ser recriado neste repositório.
+
 ## Configuração local
 
 1. Crie um repositório público no GitHub.
