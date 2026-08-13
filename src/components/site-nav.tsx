@@ -8,6 +8,7 @@ import { playUISound } from "@/lib/site-sounds";
 interface SiteNavProps {
   brand: BrandContent;
   items: NavItem[];
+  isAdmin?: boolean;
 }
 
 /**
@@ -15,7 +16,7 @@ interface SiteNavProps {
  * active page (and hovered/focused pills) fill in solid white with
  * black text — one component, two states, no separate "menu".
  */
-export function SiteNav({ brand, items }: SiteNavProps) {
+export function SiteNav({ brand, items, isAdmin = false }: SiteNavProps) {
   const pathname = usePathname();
 
   return (
@@ -57,6 +58,19 @@ export function SiteNav({ brand, items }: SiteNavProps) {
               </li>
             );
           })}
+          {isAdmin && (
+            <li>
+              <Link
+                href="/admin"
+                onClick={() => playUISound("nav")}
+                className="ml-1 inline-flex items-center gap-1.5 rounded-full border border-violet-400/40 bg-violet-400/10 px-3.5 py-1.5 text-sm font-semibold text-violet-100 transition-colors hover:bg-violet-400 hover:text-white sm:px-4"
+                aria-label="Abrir Admin Studio"
+              >
+                <span aria-hidden>⚙</span>
+                Admin
+              </Link>
+            </li>
+          )}
         </ul>
       </nav>
     </header>
