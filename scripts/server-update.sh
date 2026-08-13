@@ -11,6 +11,13 @@ env_file="$state_root/.env.local"
 data_dir="$state_root/data"
 port="${PORT:-3001}"
 bind_host="${NYX_BIND_HOST:-127.0.0.1}"
+lock_file="${NYX_UPDATE_LOCK:-/tmp/nyx-site-update.lock}"
+
+exec 9>"$lock_file"
+if ! flock -n 9; then
+  echo "Ja existe uma atualizacao do site em andamento."
+  exit 3
+fi
 
 if [[ ! "$branch" =~ ^[A-Za-z0-9._/-]+$ ]]; then
   echo "Branch invalida."
