@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { AdminWorkspaceOverlay, type AdminWorkspaceView } from "@/components/admin-workspace-overlay";
 import {
   DEFAULT_LAYOUT_DOCUMENT,
@@ -29,6 +29,7 @@ const DEVICE_WIDTH: Record<Device, string> = {
 };
 
 export function AdminLayoutEditor() {
+  const previewRef = useRef<HTMLIFrameElement>(null);
   const [document, setDocument] = useState<LayoutDocument>(DEFAULT_LAYOUT_DOCUMENT);
   const [pageId, setPageId] = useState("home");
   const [selectedId, setSelectedId] = useState<string | null>("identity");
@@ -54,6 +55,34 @@ export function AdminLayoutEditor() {
     [document.pages, pageId],
   );
   const selected = activePage.nodes.find((node) => node.id === selectedId) ?? null;
+
+  useEffect(() => {
+    previewRef.current?.contentWindow?.postMessage({
+      type: "voidscope:layout-preview",
+      document,
+      pageId: activePage.id,
+      selectedId,
+    }, window.location.origin);
+  }, [activePage.id, document, selectedId]);
+
+  useEffect(() => {
+    function receivePreview(event: MessageEvent<{ type?: string; nodeId?: string }>) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "voidscope:select-node" && event.data.nodeId) {
+        setSelectedId(event.data.nodeId);
+      }
+      if (event.data?.type === "voidscope:preview-ready") {
+        previewRef.current?.contentWindow?.postMessage({
+          type: "voidscope:layout-preview",
+          document,
+          pageId: activePage.id,
+          selectedId,
+        }, window.location.origin);
+      }
+    }
+    window.addEventListener("message", receivePreview);
+    return () => window.removeEventListener("message", receivePreview);
+  }, [activePage.id, document, selectedId]);
 
   function updateNodes(updater: (nodes: LayoutNode[]) => LayoutNode[]) {
     setDocument((current) => ({
@@ -219,32 +248,14 @@ export function AdminLayoutEditor() {
             <span className="mx-2 h-4 w-px bg-white/10" />
             <span className="text-[10px] text-white/30">100%</span>
           </div>
-          <div className="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_center,rgba(139,92,246,.08),transparent_50%)] p-4 sm:p-8">
-            <div className={`mx-auto min-h-full ${DEVICE_WIDTH[device]} rounded-xl border border-white/15 bg-black p-4 shadow-[0_30px_100px_rgba(0,0,0,.65)] transition-[max-width] duration-300`}>
-              <div className="mb-8 flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-2">
-                <span className="text-xs font-bold">VOID</span>
-                <span className="text-[10px] text-white/35">Navegação · {document.navPosition === "top" ? "Topo" : "Lateral"}</span>
-              </div>
-              <div className={`grid grid-cols-1 gap-3 ${device !== "mobile" ? "sm:grid-cols-2" : ""}`}>
-                {activePage.nodes.filter((node) => node.visible).map((node) => (
-                  <button
-                    key={node.id}
-                    onClick={() => setSelectedId(node.id)}
-                    onDragOver={(event) => event.preventDefault()}
-                    onDrop={() => moveBefore(node.id)}
-                    className={[
-                      "relative min-h-32 rounded-xl border p-4 text-left transition",
-                      node.width === "full" && device !== "mobile" ? "sm:col-span-2" : "",
-                      selectedId === node.id ? "border-violet-400 bg-violet-400/10 ring-2 ring-violet-400/20" : "border-white/10 bg-white/[.035] hover:border-white/25",
-                    ].join(" ")}
-                  >
-                    {selectedId === node.id && <span className="absolute -top-2 left-3 rounded bg-violet-500 px-1.5 py-0.5 text-[9px] font-bold uppercase">{node.type}</span>}
-                    <span className="block text-sm font-bold">{node.label}</span>
-                    <span className="mt-1 block text-[10px] text-white/35">{node.width === "full" ? "Largura total" : "Meia largura"}</span>
-                    <span className="mt-5 block h-10 rounded-lg bg-white/[.035]" />
-                  </button>
-                ))}
-              </div>
+          <div className="relative min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_center,rgba(139,92,246,.08),transparent_50%)] p-3 sm:p-5">
+            <div className={`mx-auto h-full min-h-[520px] ${DEVICE_WIDTH[device]} overflow-hidden rounded-xl border border-white/15 bg-black shadow-[0_30px_100px_rgba(0,0,0,.65)] transition-[max-width] duration-300`}>
+              <iframe
+                ref={previewRef}
+                src={`/admin/preview?page=${encodeURIComponent(activePage.id)}`}
+                title="Previa real do site"
+                className="h-full w-full border-0 bg-black"
+              />
             </div>
           </div>
         </main>
@@ -273,7 +284,15 @@ export function AdminLayoutEditor() {
               </Property>
               <Property label="Alinhamento">
                 <div className="grid grid-cols-3 gap-1">
-                  {["←", "↔", "→"].map((symbol) => <button key={symbol} className="rounded-lg border border-white/10 py-2 text-xs text-white/40 hover:bg-white/5">{symbol}</button>)}
+                  {(["left", "center", "right"] as const).map((alignment) => (
+                    <button
+                      key={alignment}
+                      onClick={() => updateSelected({ alignment })}
+                      className={`rounded-lg border py-2 text-xs ${(selected.alignment ?? "left") === alignment ? "border-violet-400/60 bg-violet-400/15 text-violet-100" : "border-white/10 text-white/40 hover:bg-white/5"}`}
+                    >
+                      {alignment === "left" ? "←" : alignment === "center" ? "↔" : "→"}
+                    </button>
+                  ))}
                 </div>
               </Property>
               <div className="border-t border-white/10 pt-4">
