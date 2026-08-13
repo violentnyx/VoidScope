@@ -127,8 +127,8 @@ export function AdminLayoutEditor() {
   }
 
   return (
-    <div className="relative left-1/2 w-[calc(100vw-1rem)] max-w-[1540px] -translate-x-1/2 px-2">
-      <header className="mb-3 flex flex-wrap items-center gap-2">
+    <div className="fixed inset-0 z-[80] flex min-h-0 flex-col overflow-hidden bg-[#0b0b0d]">
+      <header className="flex shrink-0 flex-wrap items-center gap-2 border-b border-white/10 bg-[#151517] px-4 py-3 shadow-lg">
         <div className="mr-auto">
           <div className="flex items-center gap-2">
             <Link href="/admin" className="text-xs text-white/45 hover:text-white">Admin Studio</Link>
@@ -148,8 +148,8 @@ export function AdminLayoutEditor() {
         <button onClick={() => save("publish")} disabled={saveState === "saving"} className="rounded-lg bg-violet-500 px-3 py-2 text-xs font-bold hover:bg-violet-400 disabled:opacity-40">Publicar</button>
       </header>
 
-      <div className="grid min-h-[720px] overflow-hidden rounded-2xl border border-white/10 bg-[#111113] shadow-2xl lg:grid-cols-[230px_minmax(0,1fr)_250px]">
-        <aside className="border-b border-white/10 bg-[#171719] lg:border-r lg:border-b-0">
+      <div className="grid min-h-0 flex-1 grid-cols-[220px_minmax(640px,1fr)_260px] overflow-auto bg-[#111113]">
+        <aside className="min-h-0 overflow-y-auto border-r border-white/10 bg-[#171719]">
           <div className="grid grid-cols-2 border-b border-white/10">
             {(["layers", "insert"] as const).map((tab) => (
               <button key={tab} onClick={() => setLeftTab(tab)} className={`px-3 py-3 text-xs font-semibold ${leftTab === tab ? "border-b-2 border-violet-400 text-white" : "text-white/45"}`}>
@@ -209,8 +209,8 @@ export function AdminLayoutEditor() {
           )}
         </aside>
 
-        <main className="min-w-0 bg-[#0c0c0e]">
-          <div className="flex h-12 items-center justify-center gap-1 border-b border-white/10 bg-[#151517]">
+        <main className="flex min-h-0 min-w-0 flex-col bg-[#0c0c0e]">
+          <div className="flex h-12 shrink-0 items-center justify-center gap-1 border-b border-white/10 bg-[#151517]">
             {(["desktop", "tablet", "mobile"] as Device[]).map((item) => (
               <button key={item} onClick={() => setDevice(item)} className={`rounded-md px-3 py-1.5 text-xs ${device === item ? "bg-white/10 text-white" : "text-white/35 hover:text-white"}`}>
                 {item === "desktop" ? "Desktop" : item === "tablet" ? "Tablet" : "Mobile"}
@@ -219,8 +219,8 @@ export function AdminLayoutEditor() {
             <span className="mx-2 h-4 w-px bg-white/10" />
             <span className="text-[10px] text-white/30">100%</span>
           </div>
-          <div className="h-[668px] overflow-auto bg-[radial-gradient(circle_at_center,rgba(139,92,246,.08),transparent_50%)] p-4 sm:p-8">
-            <div className={`mx-auto min-h-[600px] ${DEVICE_WIDTH[device]} rounded-xl border border-white/15 bg-black p-4 shadow-[0_30px_100px_rgba(0,0,0,.65)] transition-[max-width] duration-300`}>
+          <div className="min-h-0 flex-1 overflow-auto bg-[radial-gradient(circle_at_center,rgba(139,92,246,.08),transparent_50%)] p-4 sm:p-8">
+            <div className={`mx-auto min-h-full ${DEVICE_WIDTH[device]} rounded-xl border border-white/15 bg-black p-4 shadow-[0_30px_100px_rgba(0,0,0,.65)] transition-[max-width] duration-300`}>
               <div className="mb-8 flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-2">
                 <span className="text-xs font-bold">VOID</span>
                 <span className="text-[10px] text-white/35">Navegação · {document.navPosition === "top" ? "Topo" : "Lateral"}</span>
@@ -249,7 +249,7 @@ export function AdminLayoutEditor() {
           </div>
         </main>
 
-        <aside className="border-t border-white/10 bg-[#171719] lg:border-t-0 lg:border-l">
+        <aside className="min-h-0 overflow-y-auto border-l border-white/10 bg-[#171719]">
           <div className="border-b border-white/10 px-4 py-3 text-xs font-semibold">Design</div>
           {selected ? (
             <div className="space-y-5 p-4">
