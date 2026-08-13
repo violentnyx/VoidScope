@@ -29,6 +29,8 @@ interface AdminWorkspaceOverlayProps {
 export function AdminWorkspaceOverlay({ view, onChangeView, onClose }: AdminWorkspaceOverlayProps) {
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [updateState, setUpdateState] = useState<"idle" | "running" | "success" | "error">("idle");
+  const [updateMessage, setUpdateMessage] = useState("");
 
   useEffect(() => {
     if (!view) return;
@@ -54,6 +56,24 @@ export function AdminWorkspaceOverlay({ view, onChangeView, onClose }: AdminWork
     router.refresh();
   }
 
+  async function updateFromGit() {
+    if (!window.confirm("Buscar a versão mais recente da branch main e atualizar o site? O painel reiniciará ao final do build.")) return;
+    setUpdateState("running");
+    setUpdateMessage("Iniciando update pelo Git…");
+    try {
+      const response = await fetch("/api/admin/site-update", { method: "POST" });
+      const result = await response.json().catch(() => null) as { message?: string; error?: string; detail?: string } | null;
+      if (!response.ok) throw new Error(result?.detail || result?.error || "O servidor recusou o update.");
+      setUpdateState("success");
+      setUpdateMessage(result?.message ?? "Update iniciado. Aguarde o reinício do site.");
+      playUISound("save");
+    } catch (error) {
+      setUpdateState("error");
+      setUpdateMessage(error instanceof Error ? error.message : "Não foi possível atualizar o site.");
+      playUISound("error");
+    }
+  }
+
   function jumpTo(id: string) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -75,6 +95,7 @@ export function AdminWorkspaceOverlay({ view, onChangeView, onClose }: AdminWork
             <WorkspaceTab active={view === "crm"} onClick={() => onChangeView("crm")}>CRM</WorkspaceTab>
           </div>
           <a href="/" target="_blank" rel="noreferrer" className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/55 transition hover:bg-white/10 hover:text-white">Ver site ↗</a>
+          <button type="button" onClick={updateFromGit} disabled={updateState === "running"} className="rounded-lg bg-emerald-400 px-3 py-2 text-xs font-bold text-black transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-50">{updateState === "running" ? "Atualizando…" : "Atualizar pelo Git"}</button>
           <button type="button" onClick={logout} disabled={loggingOut} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-white/55 transition hover:border-red-400/30 hover:text-red-200 disabled:opacity-40">{loggingOut ? "Saindo…" : "Sair"}</button>
           <button type="button" onClick={onClose} className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 text-lg text-white/55 transition hover:bg-white/10 hover:text-white" aria-label="Fechar workspace">×</button>
         </header>
@@ -106,6 +127,11 @@ export function AdminWorkspaceOverlay({ view, onChangeView, onClose }: AdminWork
           </main>
         </div>
       </div>
+      {updateMessage && (
+        <div className={["fixed bottom-5 right-5 z-[110] max-w-sm rounded-xl border px-4 py-3 text-sm shadow-2xl backdrop-blur", updateState === "error" ? "border-red-400/30 bg-red-950/90 text-red-100" : "border-emerald-400/30 bg-emerald-950/90 text-emerald-100"].join(" ")} role="status">
+          {updateMessage}
+        </div>
+      )}
     </div>
   );
 }
