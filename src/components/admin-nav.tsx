@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function AdminNav({ active }: { active: "content" | "crm" | "layout" }) {
   const items: Array<{ id: "content" | "crm" | "layout"; href: string; label: string; suffix?: string }> = [
-    { id: "content", href: "/admin", label: "Conteúdo e configurações" },
+    { id: "content", href: "/admin", label: "Admin Studio" },
     { id: "crm", href: "/admin/crm", label: "CRM e pipeline" },
     { id: "layout", href: "/admin/layout", label: "Editor de Layout", suffix: "Alpha" },
   ];

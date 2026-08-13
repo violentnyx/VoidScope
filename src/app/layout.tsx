@@ -53,11 +53,11 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className={`${mono.variable} ${sans.variable} h-full`}>
       <body className="flex min-h-full flex-col font-sans text-white antialiased">
-        <SiteIntro enabled={siteSettings.introEnabled ?? true} />
+        {!isAdmin && <SiteIntro enabled={siteSettings.introEnabled ?? true} />}
         <ShaderBackground />
         <ScrollSound />
         <div className="site-content-shell flex min-h-screen flex-1 flex-col">
-          <SiteNav brand={content.brand} items={navItems} />
+          <SiteNav brand={content.brand} items={navItems} isAdmin={isAdmin} />
           <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-14 pb-10 sm:px-6 sm:pt-20">
             {children}
           </main>

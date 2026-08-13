@@ -62,7 +62,7 @@ const SECTION_ROWS: SectionRow[] = [
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-export function AdminDashboard() {
+export function AdminDashboard({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
 
   const [pages, setPages] = useState<Record<string, PageStatus>>({});
@@ -146,8 +146,8 @@ export function AdminDashboard() {
   }
 
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-3">
+    <div className={embedded ? "pb-12" : ""}>
+      {!embedded && <div className="mb-2 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold sm:text-3xl">Admin</h1>
         <button
           type="button"
@@ -157,15 +157,15 @@ export function AdminDashboard() {
         >
           {loggingOut ? "Saindo…" : "Sair"}
         </button>
-      </div>
+      </div>}
       <p className="mt-2 mb-6 max-w-xl text-sm text-white/60">
         Controle de páginas, seções e identidade do site.
       </p>
 
-      <AdminNav active="content" />
+      {!embedded && <AdminNav active="content" />}
 
       {/* ---------- Identidade ---------- */}
-      <section className="mb-10">
+      <section id="admin-identity" className="mb-10 scroll-mt-6">
         <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
           Identidade
         </h2>
@@ -173,7 +173,7 @@ export function AdminDashboard() {
       </section>
 
       {/* ---------- Contato e mídias sociais ---------- */}
-      <section className="mb-10">
+      <section id="admin-contact" className="mb-10 scroll-mt-6">
         <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
           Contato e mídias sociais
         </h2>
@@ -181,7 +181,7 @@ export function AdminDashboard() {
       </section>
 
       {/* ---------- Aparência / Shader ---------- */}
-      <section className="mb-10">
+      <section id="admin-appearance" className="mb-10 scroll-mt-6">
         <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
           Aparência e Shader
         </h2>
@@ -189,13 +189,13 @@ export function AdminDashboard() {
       </section>
 
       {/* ---------- Galeria ---------- */}
-      <section className="mb-10">
+      <section id="admin-gallery" className="mb-10 scroll-mt-6">
         <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">Galeria</h2>
         {gallery ? <GalleryManager initial={gallery} isAdmin adminMode /> : <p className="text-sm text-white/50">Carregando galeria…</p>}
       </section>
 
       {/* ---------- Integrações ---------- */}
-      <section className="mb-10">
+      <section id="admin-integrations" className="mb-10 scroll-mt-6">
         <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
           Integrações
         </h2>
@@ -211,7 +211,7 @@ export function AdminDashboard() {
       ) : (
         <>
           {/* ---------- Intro ---------- */}
-          <section className="mb-10">
+          <section id="admin-intro" className="mb-10 scroll-mt-6">
             <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
               Introdução do site
             </h2>
@@ -246,7 +246,7 @@ export function AdminDashboard() {
           </section>
 
           {/* ---------- Páginas ---------- */}
-          <section className="mb-10">
+          <section id="admin-pages" className="mb-10 scroll-mt-6">
             <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
               Páginas
             </h2>
@@ -287,7 +287,7 @@ export function AdminDashboard() {
           </section>
 
           {/* ---------- Seções da Home ---------- */}
-          <section className="mb-6">
+          <section id="admin-home-sections" className="mb-6 scroll-mt-6">
             <h2 className="mb-3 border-b border-white/10 pb-2 text-sm font-bold uppercase tracking-wide text-white/80">
               Seções da Home
             </h2>
