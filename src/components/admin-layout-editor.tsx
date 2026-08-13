@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { AdminWorkspaceOverlay, type AdminWorkspaceView } from "@/components/admin-workspace-overlay";
 import {
   DEFAULT_LAYOUT_DOCUMENT,
   type LayoutDocument,
@@ -36,6 +37,7 @@ export function AdminLayoutEditor() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [message, setMessage] = useState("Carregando rascunho…");
+  const [workspaceView, setWorkspaceView] = useState<AdminWorkspaceView | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/layout")
@@ -79,7 +81,7 @@ export function AdminLayoutEditor() {
   }
 
   function addBlock(type: LayoutNodeType, label: string) {
-    const id = `${type}-${Date.now()}`;
+    const id = `${type}-${window.crypto.randomUUID()}`;
     updateNodes((nodes) => [...nodes, {
       id,
       type,
@@ -94,7 +96,7 @@ export function AdminLayoutEditor() {
 
   function addPage() {
     const sequence = document.pages.length + 1;
-    const id = `page-${Date.now()}`;
+    const id = `page-${window.crypto.randomUUID()}`;
     setDocument((current) => ({
       ...current,
       pages: [...current.pages, { id, name: `Página ${sequence}`, route: `/pagina-${sequence}`, nodes: [] }],
@@ -129,13 +131,16 @@ export function AdminLayoutEditor() {
       <header className="mb-3 flex flex-wrap items-center gap-2">
         <div className="mr-auto">
           <div className="flex items-center gap-2">
-            <Link href="/admin" className="text-xs text-white/45 hover:text-white">Admin</Link>
+            <Link href="/admin" className="text-xs text-white/45 hover:text-white">Admin Studio</Link>
             <span className="text-white/20">/</span>
             <h1 className="text-lg font-bold">Editor de Layout</h1>
             <span className="rounded-full border border-violet-400/30 bg-violet-400/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-violet-200">Alpha</span>
           </div>
           <p className="mt-1 text-xs text-white/45">{message}</p>
         </div>
+        <button type="button" onClick={() => setWorkspaceView("settings")} className="rounded-lg border border-white/15 bg-white/[.04] px-3 py-2 text-xs font-semibold text-white/75 transition hover:border-violet-400/40 hover:bg-violet-400/10 hover:text-white">⚙ Configurações</button>
+        <button type="button" onClick={() => setWorkspaceView("content")} className="rounded-lg border border-white/15 bg-white/[.04] px-3 py-2 text-xs font-semibold text-white/75 transition hover:border-violet-400/40 hover:bg-violet-400/10 hover:text-white">Conteúdo</button>
+        <button type="button" onClick={() => setWorkspaceView("crm")} className="rounded-lg border border-white/15 bg-white/[.04] px-3 py-2 text-xs font-semibold text-white/75 transition hover:border-cyan-400/40 hover:bg-cyan-400/10 hover:text-white">CRM</button>
         <a href="/3jstest" target="_blank" className="rounded-lg border border-white/15 px-3 py-2 text-xs text-white/70 hover:bg-white/10">Abrir teste ↗</a>
         <button onClick={() => save("draft")} disabled={saveState === "saving"} className="rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold hover:bg-white/10 disabled:opacity-40">
           {saveState === "saving" ? "Salvando…" : saveState === "saved" ? "Salvo" : "Salvar rascunho"}
@@ -289,6 +294,7 @@ export function AdminLayoutEditor() {
         </aside>
       </div>
       {saveState === "error" && <p className="mt-2 text-xs text-red-400">{message}</p>}
+      <AdminWorkspaceOverlay view={workspaceView} onChangeView={setWorkspaceView} onClose={() => setWorkspaceView(null)} />
     </div>
   );
 }

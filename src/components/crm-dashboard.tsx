@@ -11,7 +11,7 @@ const inputClass = "w-full rounded-lg border border-white/10 bg-black/70 px-3 py
 function money(value: number) { return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(value); }
 function localDate(value: string) { if (!value) return "Sem data"; return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(value)); }
 
-export function CrmDashboard() {
+export function CrmDashboard({ embedded = false }: { embedded?: boolean }) {
   const [data, setData] = useState<CrmData>({ leads: [], activities: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -50,13 +50,13 @@ export function CrmDashboard() {
     setData((current) => ({ ...current, leads: current.leads.map((lead) => lead.id === id ? result : lead) }));
   }
 
-  return <div>
+  return <div className={embedded ? "pb-12" : ""}>
     <header className="mb-6">
       <p className="font-mono text-xs uppercase tracking-[0.24em] text-cyan-300/80">Relacionamento e vendas</p>
       <h1 className="mt-2 text-2xl font-bold sm:text-3xl">CRM</h1>
       <p className="mt-2 max-w-2xl text-sm text-white/55">Acompanhe os leads que chegam pelos conteúdos, organize retornos e enxergue o valor do pipeline.</p>
     </header>
-    <AdminNav active="crm" />
+    {!embedded && <AdminNav active="crm" />}
 
     {error && <div className="mb-5 rounded-xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-200">{error}</div>}
     <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
