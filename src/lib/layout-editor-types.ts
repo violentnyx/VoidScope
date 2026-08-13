@@ -8,6 +8,7 @@ export interface LayoutNode {
   width: LayoutNodeWidth;
   visible: boolean;
   locked: boolean;
+  alignment?: "left" | "center" | "right";
 }
 
 export interface LayoutPage {
